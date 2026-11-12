@@ -2,6 +2,7 @@ const {app,BrowserWindow,protocol,net,ipcMain,shell,Menu,nativeTheme}=require('e
 const {supportsAcrylic}=require('./appearance.cjs');
 const {Workspace}=require('./workspace.cjs');
 const {RecentProjects}=require('./projects.cjs');
+const {checkRelease,releasesUrl}=require('./updates.cjs');
 const acrylicSupported=supportsAcrylic(process.platform,require('node:os').release());
 const path=require('node:path');
 const fs=require('node:fs/promises');
@@ -15,6 +16,10 @@ const root=path.join(__dirname,'../dist');
 protocol.handle('amago',request=>{const url=new URL(request.url);if(url.host!=='app')return new Response('',{status:403});const file=path.resolve(root,'.'+decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname));if(!file.startsWith(root+path.sep))return new Response('',{status:403});return net.fetch(pathToFileURL(file).href)});
 const dataDir=app.getPath('userData'),file=path.join(dataDir,'vault.json');
 const trusted=event=>event.senderFrame===win?.webContents.mainFrame&&event.senderFrame?.url.startsWith('amago://app/');
+let latestUpdate=null,checkingUpdate=false;
+ipcMain.handle('updates:info',event=>{if(!trusted(event))throw Error('Invalid origin');return {version:app.getVersion(),channel:!app.isPackaged?'development':process.env.PORTABLE_EXECUTABLE_DIR?'portable':'installed'}});
+ipcMain.handle('updates:check',async(event,token)=>{if(!trusted(event))throw Error('Invalid origin');if(checkingUpdate)return {status:'error',message:'Uma consulta já está em andamento.'};checkingUpdate=true;latestUpdate=null;try{latestUpdate=await checkRelease(app.getVersion(),token);return latestUpdate}finally{checkingUpdate=false}});
+ipcMain.handle('updates:open',async(event,target)=>{if(!trusted(event))throw Error('Invalid origin');const url=target==='releases'?releasesUrl:target==='notes'?latestUpdate?.url:['setup','portable'].includes(target)&&latestUpdate?.status==='available'?latestUpdate.assets?.[target]?.url:null;if(!url)return {error:'Consulte as atualizações antes de abrir esse download.'};try{await shell.openExternal(url);return {opened:true}}catch{return {error:'Não foi possível abrir o navegador.'}}});
 let project=null;const recents=new RecentProjects(path.join(dataDir,'projects.json'));
 const connectProject=async root=>{const candidate=await Workspace.open(root),tree=await candidate.tree(),recent=await recents.remember(candidate.root);project=candidate;return {...tree,recentId:recent.id}};
 ipcMain.handle('project:recent',async event=>{if(!trusted(event))throw Error('Invalid origin');try{return {projects:await recents.list()}}catch(e){return {error:e.message}}});

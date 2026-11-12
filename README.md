@@ -29,6 +29,18 @@ Os executáveis são destinados ao Windows x64 e ainda não possuem assinatura d
 
 ## Primeiros passos
 
+### Atualizar o aplicativo
+
+Abra **Configurações → Atualizações** e clique em **Verificar atualizações**. O Âmago compara a versão instalada com a última release estável de `Nixye/amago`, mostra as novidades e oferece os downloads disponíveis. A consulta é manual; falhas de conexão ou de acesso são informadas sem indicar falsamente que o aplicativo está atualizado.
+
+Quando houver uma atualização, use **Baixar instalador (.exe)** ou **Baixar versão portátil**. O navegador realiza o download. Depois, feche o Âmago e execute o instalador, ou substitua o executável portátil pelo novo. A biblioteca permanece em `%APPDATA%/amago`; a instalação não ocorre automaticamente.
+
+Se o repositório for privado, a consulta pela API exige um token pessoal com acesso a `Nixye/amago` e permissão **Contents: read**. O campo **Acesso a repositório privado** usa o token somente na consulta, sem gravá-lo nas configurações ou exportações. O download depende do login no GitHub pelo navegador. Como alternativa, **Abrir releases no GitHub** permite acessar as versões diretamente com a conta conectada. Consulte a [documentação de releases do GitHub](https://docs.github.com/en/rest/releases/releases#get-the-latest-release).
+
+Na versão web, **Salvar e recarregar** salva os documentos abertos antes de carregar a publicação atual; um erro de salvamento impede a recarga.
+
+### Escolher seu espaço
+
 1. Após a abertura animada, escolha **Meu universo**, **Abrir pasta** ou um dos **Projetos recentes** no seletor inicial.
 2. Para trabalhar com arquivos existentes, clique em **Abrir pasta** e selecione um diretório. A **Central do projeto** mostra um resumo das pastas, documentos, imagens e conexões; a árvore fica na barra lateral.
 3. Expanda as subpastas e abra um Markdown, texto ou imagem. Use **Ctrl S** para gravar os textos no arquivo original.
@@ -79,7 +91,7 @@ Arraste os divisores entre edição e prévia, entre colunas ou na borda do pain
 
 O botão **Conexões** oculta ou reexibe as referências da nota ativa. Ele separa links de saída, links de retorno e destinos não encontrados, incluindo imagens e outros arquivos do projeto. O botão de painel na barra superior ou o botão na própria barra lateral alterna entre fixada e recolhida. Quando recolhida, aproxime o mouse da borda esquerda para revelá-la temporariamente; afastar o ponteiro a recolhe. O estado fixado/recolhido, a visibilidade das conexões e os grupos recolhidos são preservados ao reiniciar. A divisão em colunas dura a sessão atual.
 
-**Configurações** reúne as abas **Geral**, **Aparência**, **Dados** e **Plugins** em uma janela adaptada à altura da tela, com conteúdo rolável. As preferências são salvas ao alterar os controles; formulários com botão de salvar mantêm a ação no rodapé do diálogo. **Buscar**, ou **Ctrl K**, abre um diálogo com resultados navegáveis pelas setas e Enter.
+**Configurações** reúne as abas **Geral**, **Aparência**, **Dados**, **Plugins** e **Atualizações** em uma janela adaptada à altura da tela, com conteúdo rolável. As preferências são salvas ao alterar os controles; formulários com botão de salvar mantêm a ação no rodapé do diálogo. **Buscar**, ou **Ctrl K**, abre um diálogo com resultados navegáveis pelas setas e Enter.
 
 ## Busca híbrida
 
