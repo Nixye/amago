@@ -9,6 +9,7 @@ vm.runInContext(source.slice(0,source.indexOf("document.addEventListener('click'
 const run=code=>vm.runInContext(code,context);
 assert.match(run('markdown("## Uma ideia\\n\\n**forte** e *leve*")'),/<h2[^>]*>Uma ideia<\/h2>.*<strong>forte<\/strong> e <em>leve<\/em>/s);
 assert.equal(run('inline("`[[texto]]`")'),'<code>[[texto]]</code>');
+assert.equal(run('inline("[[pasta/nota#Seção|Rótulo]]")'),'<button class="wiki-link" data-wiki="pasta/nota#Seção">Rótulo</button>');
 assert.equal(run('inline("<img src=x onerror=alert(1)>")'), '&lt;img src=x onerror=alert(1)&gt;');
 assert.ok(!run('inline("[abrir](javascript:alert)")').includes('<a '));
 assert.match(run('markdown("- [ ] Fazer\\n- [x] Feito")'),/data-task="0".*data-task="1"/s);

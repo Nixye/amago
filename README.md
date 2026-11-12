@@ -8,7 +8,7 @@
 O Âmago reúne um editor Markdown, uma biblioteca pessoal e projetos baseados em pastas reais. Você pode escrever, encontrar referências e explorar conexões sem depender de sincronização em nuvem. O aplicativo é independente e não possui vínculo com o Obsidian.
 
 - **Navegação organizada:** abas Explorar e Coleções, busca em modal, árvore de arquivos e seletor de workspace.
-- **Projetos locais:** subpastas, edição de `.md` e `.markdown`, criação de arquivos e prévia de imagens.
+- **Projetos locais:** subpastas, edição de Markdown, JSON, CSV, TXT e outros textos, criação de notas e visualização de imagens.
 - **Busca híbrida:** combine nome, conteúdo, tags, menções e datas; remova filtros individualmente.
 - **Mapa interativo:** filtros compartilhados com a busca, vínculos animados, pontos arrastáveis, zoom, cores e ajustes de traçado.
 - **Escrita:** até quatro notas editáveis lado a lado, prévia Markdown, wikilinks, tarefas, notas diárias, favoritos, modelos e modo foco.
@@ -31,7 +31,7 @@ Os executáveis são destinados ao Windows x64 e ainda não possuem assinatura d
 
 1. Abra o aplicativo e explore **Meu universo**, o espaço pessoal com notas de exemplo.
 2. Para trabalhar com arquivos existentes, clique em **Abrir pasta** e selecione um diretório. Ele aparece como um projeto na barra lateral.
-3. Expanda as subpastas e abra um Markdown ou uma imagem. Use **Ctrl S** para gravar o Markdown no arquivo original.
+3. Expanda as subpastas e abra um Markdown, texto ou imagem. Use **Ctrl S** para gravar os textos no arquivo original.
 4. Use **Buscar** para refinar resultados e **Mapa do projeto** para explorar os wikilinks.
 5. Acesse **Configurações → Aparência** ou **Configurações → Plugins** para personalizar a experiência.
 
@@ -45,10 +45,23 @@ O seletor acima das abas alterna entre o espaço pessoal e o projeto aberto. A p
 | Salvamento | Automático | Ctrl S; também antes de trocar de arquivo/workspace e ao fechar o desktop |
 | Organização | Pastas lógicas, tags e favoritos | Estrutura real de diretórios |
 | Histórico e lixeira | Histórico de notas e lixeira recuperável | Não disponíveis para os arquivos do projeto |
-| Busca e mapa | Notas da biblioteca | Markdown indexado na pasta aberta |
+| Busca e mapa | Notas da biblioteca | Textos indexados; mapa das notas Markdown |
 | Backup automático | Cópia diária anterior no desktop | Não; mantenha seu próprio backup ou versionamento |
 
 Se um arquivo mudar no disco desde a leitura, o Âmago bloqueia a gravação, mantém o rascunho e oferece **Exportar rascunho** e **Recarregar do disco**. O aplicativo não mescla alterações automaticamente. Use **Atualizar arquivos** para reler a árvore e reconstruir o índice após mudanças externas.
+
+## Abrir pastas do Obsidian e arquivos de texto
+
+Ao abrir uma pasta, o Âmago indexa automaticamente seus documentos e interpreta os metadados existentes. Não é necessário converter ou regravar a pasta inteira. O botão **Propriedades**, acima do editor Markdown, permite editar tags, aliases, data e cor do ponto; outras propriedades YAML e o corpo da nota são preservados nessa operação.
+
+- Tags no corpo, como `#teste`, `**#ideia**` e `#estudo/livros`, entram nas coleções, na busca e nos filtros do mapa.
+- Menções `@luna`, wikilinks e links relativos participam da busca. Destinos que correspondem a notas geram conexões.
+- Propriedades `tags`, `aliases`, `date` e `color` são lidas do frontmatter. Listas em linha e listas com hífen são aceitas; código e comentários não geram tags.
+- A pasta `.obsidian` é ignorada. Configurações, plugins, Canvas e funcionalidades exclusivas do Obsidian não são importados.
+
+JSON, JSONC, CSV, TSV, TXT, LOG, YAML, TOML, XML, INI, arquivos de configuração e extensões comuns de código podem ser editados como texto. CSV não possui uma grade de planilha; HTML e scripts são exibidos como texto, sem execução. A lista completa está em [file-core.js](dist/file-core.js). Imagens abrem no visualizador interno.
+
+Referências de formato: [propriedades](https://obsidian.md/help/properties), [links](https://obsidian.md/help/links) e [aliases do Obsidian](https://obsidian.md/help/aliases).
 
 ## Organização do editor
 
@@ -68,7 +81,7 @@ Todos os critérios são combinados com **E**: um resultado precisa satisfazer c
 | --- | --- |
 | `pesquisa visual` | Ambos os termos no nome, caminho ou conteúdo |
 | `name:Atlas content:"pesquisa visual"` | Nome/caminho contendo Atlas e a frase no conteúdo |
-| `#design` ou `tag:design` | Tag exata, nas propriedades ou no corpo |
+| `#design` ou `tag:design` | Tag nas propriedades ou no corpo, incluindo subtags como `design/web` |
 | `@luna` ou `mention:"Outra nota"` | Menções `@pessoa` ou destinos de `[[wikilinks]]` |
 | `date:2026-11` | Notas datadas em novembro de 2026 |
 | `after:2026-11-01 before:2026-11-30` | Intervalo de datas inclusivo |
@@ -78,7 +91,7 @@ A data usa a propriedade `date` quando presente; caso contrário, a data de modi
 
 ## Mapa e propriedades Markdown
 
-O mapa conecta notas com `[[Nome da nota]]` ou `[[pasta/arquivo]]`. No projeto, destinos da mesma pasta têm prioridade; nomes repetidos devem usar o caminho completo para evitar ambiguidade. Os filtros mostram apenas pontos correspondentes e os vínculos entre eles.
+O mapa conecta notas por wikilinks, aliases, links Markdown locais e menções que correspondem a outras notas. Aceita `[[Nome da nota]]`, `[[pasta/arquivo#Seção|Rótulo]]` e `[Rótulo](../arquivo.md)`. No projeto, destinos da mesma pasta têm prioridade; nomes repetidos devem usar o caminho completo para evitar ambiguidade. Os filtros mostram apenas pontos correspondentes e os vínculos entre eles.
 
 Arraste um ponto para reposicioná-lo; arraste o fundo para navegar; use a roda do mouse ou os controles para ampliar. Os ajustes de posição, tamanho dos pontos e espessura das linhas ficam salvos localmente por workspace. **Reorganizar pontos** restaura a distribuição inicial. A animação respeita a preferência de movimento reduzido do sistema.
 
@@ -102,7 +115,7 @@ O seletor de cor grava a propriedade `color` no Markdown, preservando as demais 
 
 Os temas nativos são **Orbital, Cyberpunk, Meia-noite, Floresta, Quartzo e Alvorada**. O tema Cyberpunk é uma interpretação visual com amarelo, magenta e superfícies escuras; não inclui recursos oficiais do jogo.
 
-Temas da comunidade são importados e exportados em JSON. Plugins são instalados por pacote JSON, têm ativação individual e adicionam comandos à paleta. O gerenciador mostra as permissões antes de ativá-los; alterações propostas por um plugin exigem revisão. Não há catálogo online ou atualização automática de extensões nesta versão.
+Temas da comunidade são importados e exportados em JSON. Plugins são instalados por pacote JSON e têm ativação individual. A API v2 oferece painéis com HTML/CSS, comandos na paleta e na barra superior, configurações, eventos, armazenamento próprio e acesso autorizado aos documentos do workspace. O gerenciador mostra as permissões antes de ativá-los; alterações propostas por um plugin exigem revisão. Não há catálogo online ou atualização automática de extensões nesta versão.
 
 Veja [como criar temas e plugins](docs/extensions.md) e os [pacotes de exemplo](examples/). A API é própria do Âmago; plugins do Obsidian não são compatíveis diretamente.
 
@@ -132,9 +145,9 @@ Para transferir notas, exporte o espaço em JSON e importe no outro dispositivo.
 ## Compatibilidade e limites
 
 - Markdown: títulos, parágrafos, listas, tarefas, citações, código, negrito, itálico, links HTTP(S) e wikilinks. HTML é escapado. Tabelas, LaTeX e Canvas não estão implementados.
-- Edição de arquivos: UTF-8, até 5 MiB por Markdown. UTF-16, conteúdo binário e UTF-8 inválido são rejeitados. O editor pode normalizar quebras de linha ao editar.
-- Imagens: PNG, JPEG, GIF, WebP, BMP e SVG, até 25 MiB. Outros arquivos aparecem na árvore, sem execução ou edição.
-- Árvore: até 3.000 itens e 12 níveis. `.git`, `node_modules`, `.svn`, `.hg` e links simbólicos/junções não são percorridos pelo desktop.
+- Edição de arquivos: UTF-8, até 5 MiB por arquivo editável. UTF-16, conteúdo binário e UTF-8 inválido são rejeitados. O editor pode normalizar quebras de linha ao editar.
+- Imagens: PNG, JPEG, GIF, WebP, BMP, SVG, AVIF e ICO, até 25 MiB. Word, Excel, PDF e outros formatos não editáveis exibem um aviso de formato ainda não suportado.
+- Árvore: até 3.000 itens e 12 níveis. `.git`, `.obsidian`, `.amago`, `node_modules`, `.svn`, `.hg` e links simbólicos/junções não são percorridos pelo desktop.
 - Índice de conteúdo: orçamento aproximado de 40 MiB por projeto; arquivos fora do índice continuam localizáveis pelo nome. A interface informa leituras ignoradas.
 - Mapa: até 500 notas por consulta. Refine os filtros para visualizar partes de acervos maiores.
 - O app abre um projeto de pasta por vez e não monitora mudanças externas em tempo real.

@@ -1,0 +1,39 @@
+{
+  "format": "amago-plugin-v2",
+  "id": "workspace-inspector",
+  "name": "Explorador do workspace",
+  "version": "1.0.0",
+  "author": "Âmago",
+  "description": "Painel de exemplo com documentos, tags, preferências e armazenamento próprio.",
+  "permissions": [
+    "workspace:read",
+    "ui:panel",
+    "storage"
+  ],
+  "commands": [
+    {
+      "id": "inspect",
+      "title": "Abrir explorador"
+    }
+  ],
+  "toolbar": [
+    "inspect"
+  ],
+  "settings": [
+    {
+      "key": "limit",
+      "label": "Documentos no painel",
+      "type": "number",
+      "default": 30,
+      "min": 1,
+      "max": 200
+    },
+    {
+      "key": "tags",
+      "label": "Mostrar tags",
+      "type": "boolean",
+      "default": true
+    }
+  ],
+  "code": "export default function(api) {\n  let visible = false, busy = false;\n  async function refresh() {\n    if (!visible || busy) return;\n    busy = true;\n    try {\n      const settings = await api.getSettings();\n      const docs = await api.listDocuments();\n      const list = document.getElementById('documents');\n      if (!list) return;\n      document.getElementById('summary').textContent = docs.length + ' documentos no workspace';\n      list.replaceChildren();\n      for (const doc of docs.slice(0, settings.limit)) {\n        const button = document.createElement('button');\n        button.textContent = doc.title + (settings.tags && doc.tags.length ? ' · #' + doc.tags.join(' #') : '');\n        button.onclick = async () => { await api.openDocument(doc.id); await api.storage.set({ lastDocument: doc.id }); };\n        list.append(button);\n      }\n    } finally { busy = false; }\n  }\n  api.registerCommand('inspect', async () => {\n    await api.showPanel({title:'Explorador do workspace',width:430,\n      html:'<main><small>EXTENSÃO / ÂMAGO</small><h1>Seu workspace</h1><p id=\"summary\">Carregando…</p><button id=\"refresh\">Atualizar documentos</button><section id=\"documents\"></section></main>',\n      css:'body{margin:0;background:var(--bg,#101724);color:var(--text,#c8d5e8);font:14px/1.7 system-ui}main{padding:24px}small{color:var(--accent,#78e2df);letter-spacing:2px;font-size:10px}h1{font-size:24px;color:var(--strong,#fff)}button{display:block;width:100%;text-align:left;padding:12px;margin:9px 0;background:var(--panel,#172234);color:inherit;border:1px solid var(--border,#345);border-radius:7px;cursor:pointer}button:hover{border-color:var(--accent,#78e2df)}#summary{font-size:12px;opacity:.7}'\n    });\n    visible=true;document.getElementById('refresh').onclick=refresh;await refresh();\n  });\n  api.on('workspace:change', refresh);api.on('settings:change', refresh);api.on('view:close',()=>visible=false);\n}"
+}

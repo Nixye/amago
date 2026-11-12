@@ -11,3 +11,6 @@ const resolve=context.resolveLink;
 assert.equal(resolve([{id:'a',title:'First'},{id:'b',title:'Second'}],{id:'a'},'Second').id,'b');
 assert.equal(resolve([{path:'A/Note.md',title:'Note'},{path:'B/Note.md',title:'Note'}],{path:'B/Other.md'},'Note').path,'B/Note.md');
 console.log('Discovery/extensions: combined text/tags/mentions/dates, exclusions, quoted tokens, frontmatter, code exclusion, color preservation, plugin permissions and theme validation passed.');
+
+assert.equal(resolve([{path:'Destino.md',title:'Destino',body:'---\naliases: [Entrada]\n---'}],{path:'Notas/Origem.md'},'../Destino.md#Seção').path,'Destino.md');
+assert.equal(resolve([{path:'Destino.md',title:'Destino',body:'---\naliases: [Entrada]\n---'}],{path:'Notas/Origem.md'},'Entrada').path,'Destino.md');
