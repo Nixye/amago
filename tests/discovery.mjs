@@ -1,5 +1,5 @@
 import vm from 'node:vm';import {readFileSync} from 'node:fs';import assert from 'node:assert/strict';
-const context=vm.createContext({});for(const name of ['search-core','extension-core'])vm.runInContext(readFileSync(new URL('../dist/'+name+'.js',import.meta.url),'utf8'),context);
+const context=vm.createContext({});for(const name of ['link-core','search-core','extension-core'])vm.runInContext(readFileSync(new URL('../dist/'+name+'.js',import.meta.url),'utf8'),context);
 const {AmagoSearch:S,AmagoExtensions:E}=context;
 const doc={title:'Atlas de ideias',path:'Projetos/Atlas.md',updated:'2026-11-12T12:00:00Z',tags:['pessoal'],body:'---\ntags: [design, projeto]\ncolor: "#aabbcc"\ndate: 2026-10-20\n---\nPesquisa visual com @luna. [[Outra nota]] #inspiração\n```\n#ignorar @oculto [[código]]\n```'};
 assert.ok(S.matches(doc,'atlas visual #design @luna after:2026-10-01 before:2026-10-31'));assert.ok(S.matches(doc,'tag:pessoal mention:"Outra nota" date:2026-10'));assert.ok(S.matches(doc,'#inspiracao -tag:inexistente'));assert.ok(S.matches(doc,'path:Projetos content:"Pesquisa visual"'));assert.ok(!S.matches(doc,'#design @alguem'));assert.ok(!S.matches(doc,'#ignorar'));assert.ok(!S.matches(doc,'after:2026-11-01'));assert.equal(S.metadata(doc.body).color,'#aabbcc');

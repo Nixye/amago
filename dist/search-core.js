@@ -11,8 +11,9 @@ function metadata(body=''){
  const text=stripCode(front?body.slice(front[0].length):body);
  const inlineTags=[...text.matchAll(/(?:^|[^\p{L}\p{N}_/\\#])#([\p{L}\p{N}_/-]+)/gu)].map(m=>m[1]).filter(t=>/[\p{L}_/-]/u.test(t));
  const propertyTags=list(fields.tags||fields.tag).flatMap(t=>t.split(/\s+/)).map(t=>t.replace(/^#/,''));
- const wiki=[...stripCode(body).matchAll(/!?\[\[([^\]]+)\]\]/g)].map(m=>m[1].split('|')[0].split('#')[0].trim()).filter(Boolean);
- const localLinks=[...text.matchAll(/!?\[[^\]]*\]\(<?([^\s)>]+)>?(?:\s+["'][^\n]*?["'])?\)/g)].map(m=>{try{return decodeURIComponent(m[1]).split('#')[0]}catch{return m[1].split('#')[0]}}).filter(s=>s&&!/^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(s));
+ const references=AmagoLinks.references(body).filter(r=>AmagoLinks.local(r.target));
+ const wiki=references.filter(r=>r.syntax==='wiki').map(r=>r.target).filter(Boolean);
+ const localLinks=references.filter(r=>r.syntax==='markdown').map(r=>r.target).filter(Boolean);
  const at=[...text.matchAll(/(?:^|[^\p{L}\p{N}_\\])@([\p{L}\p{N}_][\p{L}\p{N}_.-]*)/gu)].map(m=>m[1].replace(/[.-]+$/,''));
  const aliases=list(fields.aliases||fields.alias);
  return {tags:unique([...propertyTags,...inlineTags]),propertyTags:unique(propertyTags),inlineTags:unique(inlineTags),mentions:unique([...wiki,...at]),links:unique([...wiki,...localLinks,...at]),aliases,properties:fields,color:/^#[\da-f]{6}$/i.test(fields.color||'')?fields.color:null,date:String(fields.date||''),front:front?.[0]||''};

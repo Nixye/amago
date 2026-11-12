@@ -2,7 +2,7 @@ import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 const context=vm.createContext({});
-for(const name of ['search-core','editing-core'])vm.runInContext(readFileSync(new URL('../dist/'+name+'.js',import.meta.url),'utf8'),context);
+for(const name of ['link-core','search-core','editing-core'])vm.runInContext(readFileSync(new URL('../dist/'+name+'.js',import.meta.url),'utf8'),context);
 const {AmagoEditing:E}=context;
 const docs=Array.from({length:41},(_,i)=>({body:'#tag'+String(i).padStart(2,'0')+' #comum',tags:['comum']}));
 assert.equal(E.tagPage(docs).items.length,12);

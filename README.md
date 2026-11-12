@@ -29,13 +29,15 @@ Os executáveis são destinados ao Windows x64 e ainda não possuem assinatura d
 
 ## Primeiros passos
 
-1. Abra o aplicativo e explore **Meu universo**, o espaço pessoal com notas de exemplo.
-2. Para trabalhar com arquivos existentes, clique em **Abrir pasta** e selecione um diretório. Ele aparece como um projeto na barra lateral.
+1. Após a abertura animada, escolha **Meu universo**, **Abrir pasta** ou um dos **Projetos recentes** no seletor inicial.
+2. Para trabalhar com arquivos existentes, clique em **Abrir pasta** e selecione um diretório. A **Central do projeto** mostra um resumo das pastas, documentos, imagens e conexões; a árvore fica na barra lateral.
 3. Expanda as subpastas e abra um Markdown, texto ou imagem. Use **Ctrl S** para gravar os textos no arquivo original.
 4. Use **Buscar** para refinar resultados e **Mapa do projeto** para explorar os wikilinks.
 5. Acesse **Configurações → Aparência** ou **Configurações → Plugins** para personalizar a experiência.
 
-O seletor acima das abas alterna entre o espaço pessoal e o projeto aberto. A pasta deve ser selecionada novamente em uma nova sessão. No navegador, a edição de pastas depende da File System Access API, disponível em navegadores compatíveis como Chrome e Edge, em HTTPS ou localhost. A permissão é concedida no seletor do navegador; sem essa API, o espaço pessoal e a importação/exportação continuam disponíveis.
+O seletor acima das abas reabre a janela de espaços. As últimas 12 pastas ficam em **Projetos recentes**, com busca e remoção da lista sem excluir os arquivos. No Windows, um clique reabre a pasta; se ela tiver sido movida, selecione o novo local com **Abrir pasta**. No navegador, os identificadores das pastas ficam no IndexedDB, e a reabertura pode solicitar permissão novamente. Se o armazenamento persistente estiver indisponível, a lista avisa que o projeto está disponível apenas na sessão.
+
+Na web, a edição de pastas depende da File System Access API, disponível em navegadores compatíveis como Chrome e Edge, em HTTPS ou localhost. A permissão é concedida no seletor do navegador; sem essa API, o espaço pessoal e a importação/exportação continuam disponíveis.
 
 ### Espaço pessoal e projetos
 
@@ -69,9 +71,13 @@ Em **Coleções**, clique em **Acesso rápido** ou **Tags** para recolher cada g
 
 Use **Dividir** no topo do editor para escolher outra nota. É possível abrir até quatro colunas do mesmo workspace, trocar a nota pelo título de cada coluna e alternar individualmente entre edição e prévia. **Uma coluna** retorna ao editor normal. No projeto, **Ctrl S** salva todos os rascunhos abertos; conflitos preservam o conteúdo da coluna afetada. Em janelas pequenas, as colunas têm rolagem horizontal.
 
-O botão **Conexões** oculta ou reexibe as referências da nota ativa. O botão de painel na barra superior ou o botão na própria barra lateral alterna entre fixada e recolhida. Quando recolhida, aproxime o mouse da borda esquerda para revelá-la temporariamente; afastar o ponteiro a recolhe. O estado fixado/recolhido, a visibilidade das conexões e os grupos recolhidos são preservados ao reiniciar. A divisão em colunas dura a sessão atual.
+Cada aba possui um botão de fechar; **Ctrl W** fecha a aba ativa. Os arquivos do projeto são salvos antes do fechamento e um conflito mantém o rascunho aberto. Ao fechar a última aba, a Central volta a aparecer.
 
-**Configurações** reúne as abas **Geral**, **Aparência**, **Dados** e **Plugins** em uma janela ampliada. **Buscar**, ou **Ctrl K**, abre um diálogo com resultados navegáveis pelas setas e Enter.
+Arraste os divisores entre edição e prévia, entre colunas ou na borda do painel de conexões para ajustar as larguras. As proporções ficam salvas; um duplo clique no divisor restaura o padrão. Com o divisor focado, use as setas, Home ou End.
+
+O botão **Conexões** oculta ou reexibe as referências da nota ativa. Ele separa links de saída, links de retorno e destinos não encontrados, incluindo imagens e outros arquivos do projeto. O botão de painel na barra superior ou o botão na própria barra lateral alterna entre fixada e recolhida. Quando recolhida, aproxime o mouse da borda esquerda para revelá-la temporariamente; afastar o ponteiro a recolhe. O estado fixado/recolhido, a visibilidade das conexões e os grupos recolhidos são preservados ao reiniciar. A divisão em colunas dura a sessão atual.
+
+**Configurações** reúne as abas **Geral**, **Aparência**, **Dados** e **Plugins** em uma janela adaptada à altura da tela, com conteúdo rolável. As preferências são salvas ao alterar os controles; formulários com botão de salvar mantêm a ação no rodapé do diálogo. **Buscar**, ou **Ctrl K**, abre um diálogo com resultados navegáveis pelas setas e Enter.
 
 ## Busca híbrida
 
@@ -91,7 +97,11 @@ A data usa a propriedade `date` quando presente; caso contrário, a data de modi
 
 ## Mapa e propriedades Markdown
 
-O mapa conecta notas por wikilinks, aliases, links Markdown locais e menções que correspondem a outras notas. Aceita `[[Nome da nota]]`, `[[pasta/arquivo#Seção|Rótulo]]` e `[Rótulo](../arquivo.md)`. No projeto, destinos da mesma pasta têm prioridade; nomes repetidos devem usar o caminho completo para evitar ambiguidade. Os filtros mostram apenas pontos correspondentes e os vínculos entre eles.
+O mapa conecta notas por wikilinks, aliases, links Markdown locais e menções que correspondem a outras notas. Aceita `[[Nome da nota]]`, `[[pasta/arquivo#Seção|Rótulo]]` e `[Rótulo](../arquivo.md)`. No projeto, destinos da mesma pasta têm prioridade; nomes repetidos devem usar o caminho completo para evitar ambiguidade.
+
+Também reconhece links com espaços (`[Nota](<pasta/Minha nota.md>)`), caminhos codificados (`Minha%20nota.md`), parênteses e referências Markdown `[Nome][id]` com sua definição. Links `file://` só são resolvidos quando apontam para dentro da pasta aberta. Um fragmento `#Título` abre a nota e procura o título na prévia; referências a blocos não possuem navegação específica. Imagens incorporadas com `![[imagem.png]]` e `![Descrição](../imagens/foto.png)` aparecem na prévia do projeto.
+
+O mapa reúne notas Markdown; o painel **Conexões** também mostra outros arquivos. Os filtros mostram apenas pontos correspondentes e os vínculos entre eles.
 
 Arraste um ponto para reposicioná-lo; arraste o fundo para navegar; use a roda do mouse ou os controles para ampliar. Os ajustes de posição, tamanho dos pontos e espessura das linhas ficam salvos localmente por workspace. **Reorganizar pontos** restaura a distribuição inicial. A animação respeita a preferência de movimento reduzido do sistema.
 
@@ -126,6 +136,7 @@ Veja [como criar temas e plugins](docs/extensions.md) e os [pacotes de exemplo](
 | Ctrl K | Abrir busca híbrida |
 | Ctrl N | Nova nota ou novo arquivo Markdown |
 | Ctrl S | Salvar os arquivos abertos, incluindo as outras colunas |
+| Ctrl W | Fechar a aba ativa |
 | Ctrl Shift D | Adicionar uma nota lado a lado |
 | Ctrl E | Alternar edição/leitura |
 | Ctrl Shift P | Abrir paleta de comandos |
@@ -134,9 +145,9 @@ Veja [como criar temas e plugins](docs/extensions.md) e os [pacotes de exemplo](
 
 ## Dados e privacidade
 
-No Windows, a biblioteca fica em `%APPDATA%/amago/vault.json`. **Configurações → Dados → Abrir pasta de dados** mostra o diretório exato. As gravações são serializadas e usam arquivo temporário seguido de renomeação. A primeira gravação de cada dia preserva a cópia anterior em `backups/`. O fechamento da janela aguarda o salvamento e permanece aberto se houver erro.
+No Windows, a biblioteca fica em `%APPDATA%/amago/vault.json`. **Configurações → Dados → Abrir pasta de dados** mostra o diretório exato. As gravações são serializadas e usam arquivo temporário seguido de renomeação. A lista de projetos recentes fica em `projects.json` nesse mesmo diretório, contendo nomes, caminhos e datas de abertura, sem copiar os documentos. A primeira gravação de cada dia preserva a cópia anterior em `backups/`. O fechamento da janela aguarda o salvamento e permanece aberto se houver erro.
 
-Na web, a biblioteca usa o armazenamento local do navegador. Limpar os dados do site remove essa biblioteca. Os projetos usam apenas a pasta explicitamente selecionada; seu conteúdo não é importado para o espaço pessoal.
+Na web, a biblioteca usa o armazenamento local do navegador. Limpar os dados do site remove essa biblioteca e os identificadores de projetos recentes. Os projetos usam apenas a pasta explicitamente selecionada; seu conteúdo não é importado para o espaço pessoal.
 
 O app não envia o conteúdo das notas para um servidor nem oferece sincronização automática. Fontes externas opcionais podem ser solicitadas pelo navegador; há fontes locais de fallback. Plugins são executados em um iframe isolado, com API restrita e sem conexões de rede permitidas pelo aplicativo.
 
