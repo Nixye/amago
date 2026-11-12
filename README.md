@@ -39,6 +39,8 @@ O seletor acima das abas reabre a janela de espaços. As últimas 12 pastas fica
 
 Na web, a edição de pastas depende da File System Access API, disponível em navegadores compatíveis como Chrome e Edge, em HTTPS ou localhost. A permissão é concedida no seletor do navegador; sem essa API, o espaço pessoal e a importação/exportação continuam disponíveis.
 
+Em **Configurações → Geral**, desative **Mostrar splash animada ao iniciar** para ir diretamente ao seletor de espaços nas próximas aberturas. A preferência é salva automaticamente.
+
 ### Espaço pessoal e projetos
 
 | Comportamento | Meu universo | Pasta aberta como projeto |
