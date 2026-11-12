@@ -1,0 +1,17 @@
+'use strict';
+if(window.amagoDesktop?.appearance){
+  document.body.classList.add('desktop-shell');
+  document.body.insertAdjacentHTML('afterbegin',`<header class="window-titlebar"><div class="window-caption"><span>△</span><span>Âmago <span style="opacity:.5">/ seu universo pessoal</span></span></div><div class="window-controls"><button data-window="minimize" aria-label="Minimizar janela" title="Minimizar"><svg viewBox="0 0 12 12"><path d="M1 6h10"/></svg></button><button data-window="maximize" aria-label="Maximizar ou restaurar janela" title="Maximizar / restaurar"><svg viewBox="0 0 12 12"><rect x="1.5" y="1.5" width="9" height="9"/></svg></button><button data-window="close" aria-label="Fechar janela" title="Fechar"><svg viewBox="0 0 12 12"><path d="m1 1 10 10M1 11 11 1"/></svg></button></div></header>`);
+  let supported=false,request=0;
+  function preference(){const value=vault.appearance;return {acrylic:value?.acrylic!==false,density:Number.isFinite(value?.density)?Math.min(.9,Math.max(.2,value.density)):.45}}
+  function tint(){document.body.style.setProperty('--glass-density',String(preference().density))}
+  async function apply(){const seq=++request;const result=await window.amagoDesktop.appearance({enabled:preference().acrylic,theme:vault.theme==='light'?'light':'dark'});if(seq!==request)return;supported=result.supported;document.body.classList.toggle('acrylic-active',result.enabled);tint()}
+  const previousSettings=actions.settings;
+  actions.settings=()=>{previousSettings();const p=preference();$('.modal-body').insertAdjacentHTML('beforeend',`<section class="acrylic-controls"><h3>Vidro acrílico</h3><p>${supported?'O ambiente atrás da janela aparece suavemente desfocado.':'O acrílico nativo requer Windows 11 22H2 ou mais recente. Nesta versão do sistema, usamos um fundo sólido.'}</p><label for="acrylic-mode">Material da janela</label><select class="field" id="acrylic-mode" ${supported?'':'disabled'}><option value="on" ${p.acrylic?'selected':''}>Acrílico · translúcido</option><option value="off" ${!p.acrylic?'selected':''}>Sólido · sem transparência</option></select><label for="acrylic-density">Densidade do fundo <output id="acrylic-value">${Math.round(p.density*100)}%</output></label><input id="acrylic-density" type="range" min="20" max="90" step="1" value="${Math.round(p.density*100)}" ${supported&&p.acrylic?'':'disabled'}><div class="glass-range-labels"><span>Mais transparente</span><span>Mais opaco</span></div></section>`);
+  $('#acrylic-mode').onchange=async e=>{vault.appearance={...preference(),acrylic:e.target.value==='on'};await apply();$('#acrylic-density').disabled=!supported||!preference().acrylic;persist()};
+  $('#acrylic-density').oninput=e=>{vault.appearance={...preference(),density:Number(e.target.value)/100};$('#acrylic-value').textContent=e.target.value+'%';tint()};$('#acrylic-density').onchange=()=>persist();
+  $('#theme')?.addEventListener('change',()=>apply().catch(()=>toast('Não foi possível alterar o material da janela.')));
+  };
+  document.addEventListener('click',e=>{const control=e.target.closest('[data-window]');if(control)window.amagoDesktop.windowControl(control.dataset.window)});
+  window.amagoDesktop.load().then(loaded=>{if(!loaded.error&&loaded.data?.appearance)vault.appearance=loaded.data.appearance;return apply()}).catch(()=>{document.body.classList.remove('acrylic-active');toast('Fundo sólido ativado: o acrílico não está disponível.')});
+}

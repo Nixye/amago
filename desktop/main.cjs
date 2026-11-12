@@ -1,4 +1,6 @@
-const {app,BrowserWindow,protocol,net,ipcMain,shell,Menu}=require('electron');
+const {app,BrowserWindow,protocol,net,ipcMain,shell,Menu,nativeTheme}=require('electron');
+const {supportsAcrylic}=require('./appearance.cjs');
+const acrylicSupported=supportsAcrylic(process.platform,require('node:os').release());
 const path=require('node:path');
 const fs=require('node:fs/promises');
 const {pathToFileURL}=require('node:url');
@@ -17,7 +19,10 @@ const job=chain.catch(()=>{}).then(async()=>{await fs.mkdir(dataDir,{recursive:t
 });
 ipcMain.handle('vault:folder',event=>{if(!trusted(event))throw Error('Invalid origin');return shell.openPath(dataDir)});
 Menu.setApplicationMenu(null);
-win=new BrowserWindow({width:1440,height:940,minWidth:740,minHeight:560,backgroundColor:'#090e19',title:'Âmago',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,sandbox:true,nodeIntegration:false}});
+nativeTheme.themeSource='dark';
+win=new BrowserWindow({width:1440,height:940,minWidth:740,minHeight:560,frame:false,transparent:acrylicSupported,backgroundMaterial:acrylicSupported?'acrylic':'none',backgroundColor:acrylicSupported?'#00000000':'#090e19',title:'Âmago',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,sandbox:true,nodeIntegration:false}});
+ipcMain.handle('appearance:set',(event,value)=>{if(!trusted(event)||typeof value?.enabled!=='boolean'||!['light','dark'].includes(value.theme))throw Error('Invalid appearance');nativeTheme.themeSource=value.theme;const enabled=acrylicSupported&&value.enabled;try{if(acrylicSupported)win.setBackgroundMaterial(enabled?'acrylic':'none');win.setBackgroundColor(enabled?'#00000000':value.theme==='light'?'#f0f5fb':'#090e19');return {supported:acrylicSupported,enabled}}catch{win.setBackgroundColor(value.theme==='light'?'#f0f5fb':'#090e19');return {supported:false,enabled:false}}});
+ipcMain.handle('window:control',(event,command)=>{if(!trusted(event)||!['minimize','maximize','close'].includes(command))throw Error('Invalid window command');if(command==='minimize')win.minimize();if(command==='maximize'){win.isMaximized()?win.unmaximize():win.maximize()}if(command==='close')win.close()});
 win.webContents.session.setPermissionRequestHandler((_wc,_p,callback)=>callback(false));
 win.webContents.setWindowOpenHandler(({url})=>{if(/^https?:\/\//.test(url))shell.openExternal(url);return {action:'deny'}});
 win.webContents.on('will-navigate',(e,url)=>{if(!url.startsWith('amago://app/'))e.preventDefault()});

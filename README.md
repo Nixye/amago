@@ -60,3 +60,11 @@ Interface estática em dist/. Electron em desktop/, com sandbox, isolamento de c
 Os testes verificam Markdown seguro, links, tarefas, persistência e retenção do histórico. Inspeção visual no Windows validou a central e criação de nota por modelo. A geração dos executáveis não substitui testar o instalador em todas as versões do Windows.
 
 Referências: [segurança Electron](https://www.electronjs.org/docs/latest/tutorial/security) e [NSIS/portable](https://www.electron.build/docs/nsis/).
+
+## Acrílico — versão 2.1
+
+No aplicativo Windows, Configurações → Vidro acrílico permite alternar entre acrílico e fundo sólido. A densidade de 20–90% controla apenas o fundo, preservando a opacidade do texto. O padrão é 45%; a preferência é salva junto ao espaço. A barra de título integrada permite arrastar, minimizar, maximizar/restaurar e fechar com salvamento.
+
+O desfoque usa o material nativo do Windows, visível atrás de toda a janela. Requer Windows 11 22H2 (build 22621) ou superior; sistemas anteriores usam fundo sólido. A disponibilidade e aparência também dependem do compositor e das configurações de acessibilidade do Windows. No navegador, o site conserva seu fundo habitual: páginas web não acessam o papel de parede atrás do navegador.
+
+A implementação foi inspecionada visualmente no Windows, com o ambiente atrás da janela visivelmente desfocado. Referência da API: https://www.electronjs.org/docs/latest/api/browser-window#winsetbackgroundmaterialmaterial-windows
