@@ -1,0 +1,10 @@
+{
+  "name": "amago", "version": "2.0.0", "description": "Seu universo de conhecimento conectado", "author": "Luna", "private": true,
+  "main": "desktop/main.cjs",
+  "scripts": {"start":"electron .", "web":"node serve.mjs", "test":"node verify.mjs && node tests/refinement.mjs", "dist:win":"electron-builder --win nsis portable --x64 --publish never"},
+  "devDependencies": {"electron":"45.3.1", "electron-builder":"26.18.0"},
+  "build": {"appId":"app.amago.desktop", "productName":"Amago", "directories":{"output":"release"}, "files":["dist/**/*","desktop/**/*","package.json"], "asar":true,
+    "win":{"target":["nsis","portable"],"signExecutable":false,"icon":"desktop/icon.ico"},
+    "nsis":{"oneClick":false,"perMachine":false,"allowToChangeInstallationDirectory":true,"artifactName":"Amago-${version}-Setup-${arch}.${ext}"},
+    "portable":{"artifactName":"Amago-${version}-Portable-${arch}.${ext}"}}
+}

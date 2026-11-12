@@ -1,0 +1,29 @@
+const {app,BrowserWindow,protocol,net,ipcMain,shell,Menu}=require('electron');
+const path=require('node:path');
+const fs=require('node:fs/promises');
+const {pathToFileURL}=require('node:url');
+protocol.registerSchemesAsPrivileged([{scheme:'amago',privileges:{standard:true,secure:true,supportFetchAPI:true}}]);
+let win,chain=Promise.resolve();
+if(!app.requestSingleInstanceLock()){app.quit()}else{
+app.on('second-instance',()=>{if(win){if(win.isMinimized())win.restore();win.focus()}});
+app.whenReady().then(async()=>{
+const root=path.join(__dirname,'../dist');
+protocol.handle('amago',request=>{const url=new URL(request.url);if(url.host!=='app')return new Response('',{status:403});const file=path.resolve(root,'.'+decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname));if(!file.startsWith(root+path.sep))return new Response('',{status:403});return net.fetch(pathToFileURL(file).href)});
+const dataDir=app.getPath('userData'),file=path.join(dataDir,'vault.json');
+const trusted=event=>event.senderFrame?.url.startsWith('amago://app/');
+ipcMain.handle('vault:load',async event=>{if(!trusted(event))throw Error('Invalid origin');try{return {data:JSON.parse(await fs.readFile(file,'utf8'))}}catch(e){if(e.code==='ENOENT')return {data:null};return {error:'O arquivo local não pôde ser lido. Seus arquivos foram preservados.'}}});
+ipcMain.handle('vault:save',async(event,data)=>{if(!trusted(event)||typeof data!=='string'||data.length>20000000)throw Error('Invalid vault');const parsed=JSON.parse(data);if(!Array.isArray(parsed.notes)||!Array.isArray(parsed.folders))throw Error('Invalid format');
+const job=chain.catch(()=>{}).then(async()=>{await fs.mkdir(dataDir,{recursive:true});const backups=path.join(dataDir,'backups');await fs.mkdir(backups,{recursive:true});const daily=path.join(backups,new Date().toISOString().slice(0,10)+'.json');try{await fs.copyFile(file,daily,require('node:fs').constants.COPYFILE_EXCL)}catch(e){if(!['EEXIST','ENOENT'].includes(e.code))throw e}await fs.writeFile(file+'.tmp',data,'utf8');await fs.rename(file+'.tmp',file);return {saved:true}});chain=job;return job;
+});
+ipcMain.handle('vault:folder',event=>{if(!trusted(event))throw Error('Invalid origin');return shell.openPath(dataDir)});
+Menu.setApplicationMenu(null);
+win=new BrowserWindow({width:1440,height:940,minWidth:740,minHeight:560,backgroundColor:'#090e19',title:'Âmago',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,sandbox:true,nodeIntegration:false}});
+win.webContents.session.setPermissionRequestHandler((_wc,_p,callback)=>callback(false));
+win.webContents.setWindowOpenHandler(({url})=>{if(/^https?:\/\//.test(url))shell.openExternal(url);return {action:'deny'}});
+win.webContents.on('will-navigate',(e,url)=>{if(!url.startsWith('amago://app/'))e.preventDefault()});
+win.on('close',event=>{event.preventDefault();win.webContents.executeJavaScript('window.amagoFlush ? window.amagoFlush() : Promise.resolve()').then(()=>win.destroy()).catch(()=>{require('electron').dialog.showErrorBox('Não foi possível salvar','Exporte seu espaço antes de fechar. A janela permanecerá aberta.');quitting=false})});
+await win.loadURL('amago://app/');win.show();
+});
+let quitting=false;app.on('before-quit',e=>{if(!quitting){e.preventDefault();quitting=true;chain.finally(()=>app.quit())}});
+app.on('window-all-closed',()=>app.quit());
+}

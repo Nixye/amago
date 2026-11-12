@@ -1,31 +1,62 @@
-# Âmago
+# Âmago 2.0
 
-Aplicação web pessoal de notas, inspirada no fluxo de conhecimento conectado do Obsidian. HTML, CSS e JavaScript, sem etapa de compilação.
+Aplicativo web e Windows para conhecimento conectado. Interface orbital em azul profundo, ciano e violeta, animações discretas e indicadores baseados nos dados do seu espaço.
 
-## Executar
+## Usar
 
-Com Node.js instalado, execute `node serve.mjs` e abra http://localhost:4173.
+Baixe o instalador Setup ou o executável Portable na página Releases. Windows x64. O portátil dispensa instalação, mas guarda os dados no perfil do Windows. Os binários não têm assinatura digital comercial. Verifique os downloads com SHA256SUMS.txt.
 
 ## Recursos
 
-- Notas Markdown com leitura, edição e visualização lado a lado
-- Pastas, tags, favoritos, busca e notas diárias
-- Links `[[entre notas]]`, backlinks e mapa de conexões
-- Salvamento no localStorage deste navegador
-- Importação de Markdown e backups JSON; exportação individual em Markdown ou de todo o espaço em JSON
-- Tema claro e escuro, atalhos e layout responsivo
+- Central com notas recentes, conexões e tarefas pendentes.
+- Editor Markdown com prévia lado a lado e barra de formatação.
+- Pastas, tags, favoritos, busca e notas diárias.
+- Wikilinks, backlinks, afinidades por tags e mapa com zoom/arraste.
+- Central de tarefas ligada às notas originais.
+- Modelos de projeto, reunião, leitura e revisão semanal.
+- Histórico de até 20 versões por nota, agrupadas em intervalos de 30 segundos; inspeção e restauração do conteúdo.
+- Lixeira recuperável, duplicação, modo foco e progresso de leitura.
+- Paleta de comandos: Ctrl Shift P. Busca: Ctrl K. Nova nota: Ctrl N.
+- Temas claro/escuro; movimento reduzido respeita a preferência do sistema.
+- Importação de Markdown e JSON; exportação de notas e do espaço.
 
 ## Dados
 
-Esta primeira versão usa armazenamento local do navegador. Não há conta interna, sincronização entre dispositivos, colaboração ou backend de notas. Limpar os dados do site remove as notas locais. Use a exportação nas configurações para fazer cópias e transferir o espaço.
+A web usa armazenamento do navegador e preserva as notas da versão anterior. No Windows, vault.json fica em %APPDATA%/amago (capitalização pode variar); Configurações → Abrir pasta de dados mostra o caminho exato. Gravações são serializadas, usando arquivo temporário e renomeação. O fechamento aguarda a gravação final. A primeira gravação de cada dia preserva uma cópia anterior na pasta backups.
 
-O leitor implementa um subconjunto de Markdown: títulos, parágrafos, listas, tarefas, citações, blocos de código, negrito, itálico, links HTTP(S) e wikilinks. HTML escrito nas notas é exibido como texto. Importar um backup adiciona as notas com novos IDs, preservando as notas já existentes.
+Para transferir notas da web ao Windows, exporte o espaço na web e importe o JSON no desktop. A importação adiciona notas; não substitui as existentes. Não há sincronização automática. A exportação inclui histórico e lixeira, mas a importação atual recupera somente notas ativas. Para recuperação integral no Windows, feche o app e substitua vault.json por um backup válido, preservando antes o arquivo atual.
 
-## Estrutura
+Markdown suporta títulos, parágrafos, listas, tarefas, citações, código, negrito, itálico, links HTTP(S) e wikilinks. HTML é escapado. Tabelas, LaTeX, plugins e Canvas do Obsidian não estão implementados. O conteúdo das notas não é enviado para servidores. Fontes externas opcionais têm fallback local.
 
-- `dist/index.html`: estrutura da aplicação
-- `dist/style.css`: interface e temas
-- `dist/app.js`: dados, editor e interações
-- `.openai/hosting.json`: configuração de publicação
+## Desenvolvimento
 
-Fontes DM Sans e Manrope são carregadas do Google Fonts, com alternativas locais. O aplicativo não envia o conteúdo das notas a um servidor.
+Requer Node.js 24 e npm.
+
+```sh
+npm ci
+npm test
+npm run web
+npm start
+npm run dist:win
+```
+
+A web abre em http://localhost:4173. Se o npm local bloquear a instalação do runtime Electron, execute `node node_modules/electron/install.js` antes de `npm start`.
+
+## Releases
+
+O workflow .github/workflows/windows.yml testa e compila instalador/portátil em Windows. Tags v* geram uma GitHub Release com executáveis e SHA256. A tag precisa corresponder à versão de package.json. Execução manual gera artefatos sem publicar release.
+
+```sh
+git tag v2.0.0
+git push github main --tags
+```
+
+O job de compilação tem somente leitura; apenas o job de publicação recebe contents: write. Não requer token pessoal no workflow.
+
+## Arquitetura e validação
+
+Interface estática em dist/. Electron em desktop/, com sandbox, isolamento de contexto, Node desativado no renderer, protocolo local e ponte IPC restrita. Links externos abrem no navegador. A evolução preserva a chave e IDs das notas da versão original.
+
+Os testes verificam Markdown seguro, links, tarefas, persistência e retenção do histórico. Inspeção visual no Windows validou a central e criação de nota por modelo. A geração dos executáveis não substitui testar o instalador em todas as versões do Windows.
+
+Referências: [segurança Electron](https://www.electronjs.org/docs/latest/tutorial/security) e [NSIS/portable](https://www.electron.build/docs/nsis/).
