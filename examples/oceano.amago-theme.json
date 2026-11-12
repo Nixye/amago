@@ -1,0 +1,22 @@
+{
+  "format": "amago-theme-v1",
+  "id": "oceano",
+  "name": "Oceano",
+  "author": "Sua comunidade",
+  "mode": "dark",
+  "colors": {
+    "bg": "#0c1520",
+    "sidebar": "#09121c",
+    "panel": "#172c3d",
+    "raised": "#1a3447",
+    "hover": "#23465d",
+    "border": "#35566b",
+    "text": "#c0d4df",
+    "strong": "#edf7ff",
+    "muted": "#8daabb",
+    "subtle": "#6b879a",
+    "accent": "#73dfd3",
+    "accent-bg": "#173b45",
+    "purple": "#afa8f3"
+  }
+}

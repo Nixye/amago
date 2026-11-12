@@ -1,0 +1,18 @@
+{
+  "format": "amago-plugin-v1",
+  "id": "word-count",
+  "name": "Contador de palavras",
+  "version": "1.0.0",
+  "author": "Âmago",
+  "description": "Conta palavras da nota atualmente aberta.",
+  "permissions": [
+    "note:read"
+  ],
+  "commands": [
+    {
+      "id": "count",
+      "title": "Contar palavras"
+    }
+  ],
+  "code": "export default function(api) { api.registerCommand('count', async () => { const note = await api.getActiveNote(); const words = note.body.trim().split(/\\s+/).filter(Boolean).length; await api.showMessage(note.title + ': ' + words + ' palavras'); }); }"
+}

@@ -1,70 +1,170 @@
-# Âmago 2.0
+<p align="center"><img src="dist/assets/amago-mark.svg" width="88" alt="Ícone do Âmago"></p>
+<h1 align="center">Âmago</h1>
+<p align="center">Escrita em Markdown, arquivos locais e conhecimento conectado.<br>Aplicativo para Windows e navegador, com uma interface feita para explorar ideias.</p>
+<p align="center"><a href="https://github.com/Nixye/amago/releases/latest">Baixar para Windows</a> · <a href="#primeiros-passos">Primeiros passos</a> · <a href="docs/extensions.md">Temas e plugins</a> · <a href="#desenvolvimento">Desenvolvimento</a></p>
 
-Aplicativo web e Windows para conhecimento conectado. Interface orbital em azul profundo, ciano e violeta, animações discretas e indicadores baseados nos dados do seu espaço.
+## O que é o Âmago
 
-## Usar
+O Âmago reúne um editor Markdown, uma biblioteca pessoal e projetos baseados em pastas reais. Você pode escrever, encontrar referências e explorar conexões sem depender de sincronização em nuvem. O aplicativo é independente e não possui vínculo com o Obsidian.
 
-Baixe o instalador Setup ou o executável Portable na página Releases. Windows x64. O portátil dispensa instalação, mas guarda os dados no perfil do Windows. Os binários não têm assinatura digital comercial. Verifique os downloads com SHA256SUMS.txt.
+- **Navegação organizada:** abas Explorar, Buscar e Coleções, árvore de arquivos e seletor de workspace.
+- **Projetos locais:** subpastas, edição de `.md` e `.markdown`, criação de arquivos e prévia de imagens.
+- **Busca híbrida:** combine nome, conteúdo, tags, menções e datas; remova filtros individualmente.
+- **Mapa interativo:** filtros compartilhados com a busca, vínculos animados, pontos arrastáveis, zoom, cores e ajustes de traçado.
+- **Escrita:** prévia lado a lado, wikilinks, tarefas, notas diárias, favoritos, modelos e modo foco.
+- **Personalização:** seis temas nativos, tema inspirado em Cyberpunk, paletas da comunidade e plugins com permissões explícitas.
+- **Windows:** instalador e versão portátil x64, ícone próprio e acrílico nativo com densidade ajustável.
 
-## Recursos
+## Instalação no Windows
 
-- Central com notas recentes, conexões e tarefas pendentes.
-- Editor Markdown com prévia lado a lado e barra de formatação.
-- Pastas, tags, favoritos, busca e notas diárias.
-- Wikilinks, backlinks, afinidades por tags e mapa com zoom/arraste.
-- Central de tarefas ligada às notas originais.
-- Modelos de projeto, reunião, leitura e revisão semanal.
-- Histórico de até 20 versões por nota, agrupadas em intervalos de 30 segundos; inspeção e restauração do conteúdo.
-- Lixeira recuperável, duplicação, modo foco e progresso de leitura.
-- Paleta de comandos: Ctrl Shift P. Busca: Ctrl K. Nova nota: Ctrl N.
-- Temas claro/escuro; movimento reduzido respeita a preferência do sistema.
-- Importação de Markdown e JSON; exportação de notas e do espaço.
+Na [última release](https://github.com/Nixye/amago/releases/latest), escolha:
 
-## Dados
+| Arquivo | Uso |
+| --- | --- |
+| `Amago-<versão>-Setup-x64.exe` | Instalação com escolha de diretório e atalhos. |
+| `Amago-<versão>-Portable-x64.exe` | Execução sem instalação; os dados continuam no perfil do Windows. |
+| `SHA256SUMS.txt` | Resumos SHA-256 dos executáveis publicados. |
 
-A web usa armazenamento do navegador e preserva as notas da versão anterior. No Windows, vault.json fica em %APPDATA%/amago (capitalização pode variar); Configurações → Abrir pasta de dados mostra o caminho exato. Gravações são serializadas, usando arquivo temporário e renomeação. O fechamento aguarda a gravação final. A primeira gravação de cada dia preserva uma cópia anterior na pasta backups.
+Os executáveis são destinados ao Windows x64 e ainda não possuem assinatura digital comercial. O acrílico requer Windows 11 22H2 ou superior; em sistemas sem suporte, o aplicativo usa fundo sólido. O resultado também depende das configurações visuais do Windows. No navegador, a transparência é interna à página e não revela o papel de parede do sistema.
 
-Para transferir notas da web ao Windows, exporte o espaço na web e importe o JSON no desktop. A importação adiciona notas; não substitui as existentes. Não há sincronização automática. A exportação inclui histórico e lixeira, mas a importação atual recupera somente notas ativas. Para recuperação integral no Windows, feche o app e substitua vault.json por um backup válido, preservando antes o arquivo atual.
+## Primeiros passos
 
-Markdown suporta títulos, parágrafos, listas, tarefas, citações, código, negrito, itálico, links HTTP(S) e wikilinks. HTML é escapado. Tabelas, LaTeX, plugins e Canvas do Obsidian não estão implementados. O conteúdo das notas não é enviado para servidores. Fontes externas opcionais têm fallback local.
+1. Abra o aplicativo e explore **Meu universo**, o espaço pessoal com notas de exemplo.
+2. Para trabalhar com arquivos existentes, clique em **Abrir pasta** e selecione um diretório. Ele aparece como um projeto na barra lateral.
+3. Expanda as subpastas e abra um Markdown ou uma imagem. Use **Ctrl S** para gravar o Markdown no arquivo original.
+4. Use **Buscar** para refinar resultados e **Mapa do projeto** para explorar os wikilinks.
+5. Acesse **Configurações → Temas e comunidade** ou **Plugins e extensões** para personalizar a experiência.
+
+O seletor acima das abas alterna entre o espaço pessoal e o projeto aberto. A pasta deve ser selecionada novamente em uma nova sessão. No navegador, a edição de pastas depende da File System Access API, disponível em navegadores compatíveis como Chrome e Edge, em HTTPS ou localhost. A permissão é concedida no seletor do navegador; sem essa API, o espaço pessoal e a importação/exportação continuam disponíveis.
+
+### Espaço pessoal e projetos
+
+| Comportamento | Meu universo | Pasta aberta como projeto |
+| --- | --- | --- |
+| Armazenamento | Biblioteca local do app/navegador | Arquivos originais da pasta selecionada |
+| Salvamento | Automático | Ctrl S; também antes de trocar de arquivo/workspace e ao fechar o desktop |
+| Organização | Pastas lógicas, tags e favoritos | Estrutura real de diretórios |
+| Histórico e lixeira | Histórico de notas e lixeira recuperável | Não disponíveis para os arquivos do projeto |
+| Busca e mapa | Notas da biblioteca | Markdown indexado na pasta aberta |
+| Backup automático | Cópia diária anterior no desktop | Não; mantenha seu próprio backup ou versionamento |
+
+Se um arquivo mudar no disco desde a leitura, o Âmago bloqueia a gravação, mantém o rascunho e oferece **Exportar rascunho** e **Recarregar do disco**. O aplicativo não mescla alterações automaticamente. Use **Atualizar arquivos** para reler a árvore e reconstruir o índice após mudanças externas.
+
+## Busca híbrida
+
+Todos os critérios são combinados com **E**: um resultado precisa satisfazer cada filtro. A busca ignora diferenças de maiúsculas e acentos. Use aspas para valores com espaços e `-` para excluir um critério.
+
+| Consulta | Encontra |
+| --- | --- |
+| `pesquisa visual` | Ambos os termos no nome, caminho ou conteúdo |
+| `name:Atlas content:"pesquisa visual"` | Nome/caminho contendo Atlas e a frase no conteúdo |
+| `#design` ou `tag:design` | Tag exata, nas propriedades ou no corpo |
+| `@luna` ou `mention:"Outra nota"` | Menções `@pessoa` ou destinos de `[[wikilinks]]` |
+| `date:2026-11` | Notas datadas em novembro de 2026 |
+| `after:2026-11-01 before:2026-11-30` | Intervalo de datas inclusivo |
+| `projeto #design @luna -tag:arquivado` | Combinação dos quatro critérios |
+
+A data usa a propriedade `date` quando presente; caso contrário, a data de modificação. Tags e menções dentro de blocos de código não entram nesses filtros. O formulário **Refinar busca** ajuda a adicionar tags, menções e intervalos; os filtros aparecem como botões removíveis. No mapa, **Usar busca lateral** copia a consulta atual.
+
+## Mapa e propriedades Markdown
+
+O mapa conecta notas com `[[Nome da nota]]` ou `[[pasta/arquivo]]`. No projeto, destinos da mesma pasta têm prioridade; nomes repetidos devem usar o caminho completo para evitar ambiguidade. Os filtros mostram apenas pontos correspondentes e os vínculos entre eles.
+
+Arraste um ponto para reposicioná-lo; arraste o fundo para navegar; use a roda do mouse ou os controles para ampliar. Os ajustes de posição, tamanho dos pontos e espessura das linhas ficam salvos localmente por workspace. **Reorganizar pontos** restaura a distribuição inicial. A animação respeita a preferência de movimento reduzido do sistema.
+
+A cor pode ser escolhida ao selecionar um ponto ou declarada no começo do arquivo:
+
+```markdown
+---
+tags: [design, projeto]
+color: "#78e2df"
+date: 2026-11-12
+---
+
+# Atlas de ideias
+
+Pesquisa com @luna, conectada a [[Próximos passos]].
+```
+
+O seletor de cor grava a propriedade `color` no Markdown, preservando as demais propriedades. São aceitas cores hexadecimais de seis dígitos. O parser reconhece propriedades simples e listas de tags; não é uma implementação completa de YAML.
+
+## Temas e plugins
+
+Os temas nativos são **Orbital, Cyberpunk, Meia-noite, Floresta, Quartzo e Alvorada**. O tema Cyberpunk é uma interpretação visual com amarelo, magenta e superfícies escuras; não inclui recursos oficiais do jogo.
+
+Temas da comunidade são importados e exportados em JSON. Plugins são instalados por pacote JSON, têm ativação individual e adicionam comandos à paleta. O gerenciador mostra as permissões antes de ativá-los; alterações propostas por um plugin exigem revisão. Não há catálogo online ou atualização automática de extensões nesta versão.
+
+Veja [como criar temas e plugins](docs/extensions.md) e os [pacotes de exemplo](examples/). A API é própria do Âmago; plugins do Obsidian não são compatíveis diretamente.
+
+## Atalhos
+
+| Atalho | Ação |
+| --- | --- |
+| Ctrl K | Abrir busca híbrida |
+| Ctrl N | Nova nota ou novo arquivo Markdown |
+| Ctrl S | Salvar o conteúdo atual |
+| Ctrl E | Alternar edição/leitura |
+| Ctrl Shift P | Abrir paleta de comandos |
+| Esc | Fechar diálogo ou sair do modo foco |
+| Setas, Home e End nas abas laterais | Trocar painel da barra lateral |
+
+## Dados e privacidade
+
+No Windows, a biblioteca fica em `%APPDATA%/amago/vault.json`. **Configurações → Abrir pasta de dados** mostra o diretório exato. As gravações são serializadas e usam arquivo temporário seguido de renomeação. A primeira gravação de cada dia preserva a cópia anterior em `backups/`. O fechamento da janela aguarda o salvamento e permanece aberto se houver erro.
+
+Na web, a biblioteca usa o armazenamento local do navegador. Limpar os dados do site remove essa biblioteca. Os projetos usam apenas a pasta explicitamente selecionada; seu conteúdo não é importado para o espaço pessoal.
+
+O app não envia o conteúdo das notas para um servidor nem oferece sincronização automática. Fontes externas opcionais podem ser solicitadas pelo navegador; há fontes locais de fallback. Plugins são executados em um iframe isolado, com API restrita e sem conexões de rede permitidas pelo aplicativo.
+
+Para transferir notas, exporte o espaço em JSON e importe no outro dispositivo. A importação adiciona notas ativas; não restaura histórico, lixeira, temas ou plugins. Para recuperação integral no Windows, feche o app, preserve o `vault.json` atual e substitua-o por uma cópia válida do backup.
+
+## Compatibilidade e limites
+
+- Markdown: títulos, parágrafos, listas, tarefas, citações, código, negrito, itálico, links HTTP(S) e wikilinks. HTML é escapado. Tabelas, LaTeX e Canvas não estão implementados.
+- Edição de arquivos: UTF-8, até 5 MiB por Markdown. UTF-16, conteúdo binário e UTF-8 inválido são rejeitados. O editor pode normalizar quebras de linha ao editar.
+- Imagens: PNG, JPEG, GIF, WebP, BMP e SVG, até 25 MiB. Outros arquivos aparecem na árvore, sem execução ou edição.
+- Árvore: até 3.000 itens e 12 níveis. `.git`, `node_modules`, `.svn`, `.hg` e links simbólicos/junções não são percorridos pelo desktop.
+- Índice de conteúdo: orçamento aproximado de 40 MiB por projeto; arquivos fora do índice continuam localizáveis pelo nome. A interface informa leituras ignoradas.
+- Mapa: até 500 notas por consulta. Refine os filtros para visualizar partes de acervos maiores.
+- O app abre um projeto de pasta por vez e não monitora mudanças externas em tempo real.
 
 ## Desenvolvimento
 
-Requer Node.js 24 e npm.
+Requer Node.js 24 e npm. Para gerar os executáveis, use Windows x64.
 
 ```sh
 npm ci
 npm test
 npm run web
-npm start
-npm run dist:win
 ```
 
-A web abre em http://localhost:4173. Se o npm local bloquear a instalação do runtime Electron, execute `node node_modules/electron/install.js` antes de `npm start`.
-
-## Releases
-
-O workflow .github/workflows/windows.yml testa e compila instalador/portátil em Windows. Tags v* geram uma GitHub Release com executáveis e SHA256. A tag precisa corresponder à versão de package.json. Execução manual gera artefatos sem publicar release.
+A web fica disponível em `http://localhost:4173`.
 
 ```sh
-git tag v2.0.0
-git push github main --tags
+npm start          # aplicativo Electron
+npm run dist:win   # instalador e portátil em release/
 ```
 
-O job de compilação tem somente leitura; apenas o job de publicação recebe contents: write. Não requer token pessoal no workflow.
+Caso o ambiente bloqueie scripts de instalação do npm, execute `node node_modules/electron/install.js` para instalar o runtime antes de iniciar o desktop.
 
-## Arquitetura e validação
+| Diretório | Responsabilidade |
+| --- | --- |
+| `dist/` | Interface estática, busca, mapa, temas e runtime de plugins |
+| `desktop/` | Electron, janela nativa, persistência e acesso às pastas |
+| `tests/` e `verify.mjs` | Verificação de Markdown, histórico, arquivos, busca e extensões |
+| `examples/` | Pacotes de extensões para desenvolvimento |
+| `.github/workflows/windows.yml` | Compilação e publicação dos executáveis |
 
-Interface estática em dist/. Electron em desktop/, com sandbox, isolamento de contexto, Node desativado no renderer, protocolo local e ponte IPC restrita. Links externos abrem no navegador. A evolução preserva a chave e IDs das notas da versão original.
+A interface usa JavaScript, HTML, CSS e SVG, sem framework de frontend. O Electron executa com sandbox, isolamento de contexto e Node desativado no renderer. A ponte IPC valida a origem e expõe operações específicas. Referências: [segurança no Electron](https://www.electronjs.org/docs/latest/tutorial/security/) e [isolamento de iframes](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe#sandbox).
 
-Os testes verificam Markdown seguro, links, tarefas, persistência e retenção do histórico. Inspeção visual no Windows validou a central e criação de nota por modelo. A geração dos executáveis não substitui testar o instalador em todas as versões do Windows.
+### Publicar uma release
 
-Referências: [segurança Electron](https://www.electronjs.org/docs/latest/tutorial/security) e [NSIS/portable](https://www.electron.build/docs/nsis/).
+1. Atualize `package.json` e `package-lock.json` com `npm version <versão> --no-git-tag-version`.
+2. Execute `npm test` e faça commit das alterações.
+3. Crie a tag `v<versão>` e envie a branch e a tag ao GitHub.
 
-## Acrílico — versão 2.1
+O GitHub Actions valida a versão, testa, compila os dois executáveis e publica uma release com SHA-256. A execução manual do workflow gera artefatos sem criar release. Apenas o job de publicação recebe `contents: write`; não é necessário um token pessoal no workflow.
 
-No aplicativo Windows, Configurações → Vidro acrílico permite alternar entre acrílico e fundo sólido. A densidade de 20–90% controla apenas o fundo, preservando a opacidade do texto. O padrão é 45%; a preferência é salva junto ao espaço. A barra de título integrada permite arrastar, minimizar, maximizar/restaurar e fechar com salvamento.
+## Relatar problemas
 
-O desfoque usa o material nativo do Windows, visível atrás de toda a janela. Requer Windows 11 22H2 (build 22621) ou superior; sistemas anteriores usam fundo sólido. A disponibilidade e aparência também dependem do compositor e das configurações de acessibilidade do Windows. No navegador, o site conserva seu fundo habitual: páginas web não acessam o papel de parede atrás do navegador.
-
-A implementação foi inspecionada visualmente no Windows, com o ambiente atrás da janela visivelmente desfocado. Referência da API: https://www.electronjs.org/docs/latest/api/browser-window#winsetbackgroundmaterialmaterial-windows
+Ao abrir uma issue, inclua a versão do Âmago, a versão do Windows ou navegador, os passos para reproduzir e se o problema ocorre no espaço pessoal ou em um projeto. Use um arquivo de exemplo sem conteúdo privado quando necessário. Problemas em extensões devem incluir o nome e a versão do pacote.

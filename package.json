@@ -1,6 +1,6 @@
 {
   "name": "amago",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Seu universo de conhecimento conectado",
   "author": "Luna",
   "private": true,
@@ -8,7 +8,7 @@
   "scripts": {
     "start": "electron .",
     "web": "node serve.mjs",
-    "test": "node verify.mjs && node tests/refinement.mjs",
+    "test": "node verify.mjs && node tests/refinement.mjs && node tests/workspace.mjs && node tests/discovery.mjs",
     "dist:win": "electron-builder --win nsis portable --x64 --publish never"
   },
   "devDependencies": {
