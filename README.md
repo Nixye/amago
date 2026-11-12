@@ -7,11 +7,11 @@
 
 O Âmago reúne um editor Markdown, uma biblioteca pessoal e projetos baseados em pastas reais. Você pode escrever, encontrar referências e explorar conexões sem depender de sincronização em nuvem. O aplicativo é independente e não possui vínculo com o Obsidian.
 
-- **Navegação organizada:** abas Explorar, Buscar e Coleções, árvore de arquivos e seletor de workspace.
+- **Navegação organizada:** abas Explorar e Coleções, busca em modal, árvore de arquivos e seletor de workspace.
 - **Projetos locais:** subpastas, edição de `.md` e `.markdown`, criação de arquivos e prévia de imagens.
 - **Busca híbrida:** combine nome, conteúdo, tags, menções e datas; remova filtros individualmente.
 - **Mapa interativo:** filtros compartilhados com a busca, vínculos animados, pontos arrastáveis, zoom, cores e ajustes de traçado.
-- **Escrita:** prévia lado a lado, wikilinks, tarefas, notas diárias, favoritos, modelos e modo foco.
+- **Escrita:** até quatro notas editáveis lado a lado, prévia Markdown, wikilinks, tarefas, notas diárias, favoritos, modelos e modo foco.
 - **Personalização:** seis temas nativos, tema inspirado em Cyberpunk, paletas da comunidade e plugins com permissões explícitas.
 - **Windows:** instalador e versão portátil x64, ícone próprio e acrílico nativo com densidade ajustável.
 
@@ -33,7 +33,7 @@ Os executáveis são destinados ao Windows x64 e ainda não possuem assinatura d
 2. Para trabalhar com arquivos existentes, clique em **Abrir pasta** e selecione um diretório. Ele aparece como um projeto na barra lateral.
 3. Expanda as subpastas e abra um Markdown ou uma imagem. Use **Ctrl S** para gravar o Markdown no arquivo original.
 4. Use **Buscar** para refinar resultados e **Mapa do projeto** para explorar os wikilinks.
-5. Acesse **Configurações → Temas e comunidade** ou **Plugins e extensões** para personalizar a experiência.
+5. Acesse **Configurações → Aparência** ou **Configurações → Plugins** para personalizar a experiência.
 
 O seletor acima das abas alterna entre o espaço pessoal e o projeto aberto. A pasta deve ser selecionada novamente em uma nova sessão. No navegador, a edição de pastas depende da File System Access API, disponível em navegadores compatíveis como Chrome e Edge, em HTTPS ou localhost. A permissão é concedida no seletor do navegador; sem essa API, o espaço pessoal e a importação/exportação continuam disponíveis.
 
@@ -50,6 +50,16 @@ O seletor acima das abas alterna entre o espaço pessoal e o projeto aberto. A p
 
 Se um arquivo mudar no disco desde a leitura, o Âmago bloqueia a gravação, mantém o rascunho e oferece **Exportar rascunho** e **Recarregar do disco**. O aplicativo não mescla alterações automaticamente. Use **Atualizar arquivos** para reler a árvore e reconstruir o índice após mudanças externas.
 
+## Organização do editor
+
+Em **Coleções**, clique em **Acesso rápido** ou **Tags** para recolher cada grupo. A busca da categoria filtra os nomes das tags; a lista mostra até 12 por página, com contagem de notas e navegação entre páginas. Selecionar uma tag abre a busca híbrida.
+
+Use **Dividir** no topo do editor para escolher outra nota. É possível abrir até quatro colunas do mesmo workspace, trocar a nota pelo título de cada coluna e alternar individualmente entre edição e prévia. **Uma coluna** retorna ao editor normal. No projeto, **Ctrl S** salva todos os rascunhos abertos; conflitos preservam o conteúdo da coluna afetada. Em janelas pequenas, as colunas têm rolagem horizontal.
+
+O botão **Conexões** oculta ou reexibe as referências da nota ativa. O botão de painel na barra superior ou o botão na própria barra lateral alterna entre fixada e recolhida. Quando recolhida, aproxime o mouse da borda esquerda para revelá-la temporariamente; afastar o ponteiro a recolhe. O estado fixado/recolhido, a visibilidade das conexões e os grupos recolhidos são preservados ao reiniciar. A divisão em colunas dura a sessão atual.
+
+**Configurações** reúne as abas **Geral**, **Aparência**, **Dados** e **Plugins** em uma janela ampliada. **Buscar**, ou **Ctrl K**, abre um diálogo com resultados navegáveis pelas setas e Enter.
+
 ## Busca híbrida
 
 Todos os critérios são combinados com **E**: um resultado precisa satisfazer cada filtro. A busca ignora diferenças de maiúsculas e acentos. Use aspas para valores com espaços e `-` para excluir um critério.
@@ -64,7 +74,7 @@ Todos os critérios são combinados com **E**: um resultado precisa satisfazer c
 | `after:2026-11-01 before:2026-11-30` | Intervalo de datas inclusivo |
 | `projeto #design @luna -tag:arquivado` | Combinação dos quatro critérios |
 
-A data usa a propriedade `date` quando presente; caso contrário, a data de modificação. Tags e menções dentro de blocos de código não entram nesses filtros. O formulário **Refinar busca** ajuda a adicionar tags, menções e intervalos; os filtros aparecem como botões removíveis. No mapa, **Usar busca lateral** copia a consulta atual.
+A data usa a propriedade `date` quando presente; caso contrário, a data de modificação. Tags e menções dentro de blocos de código não entram nesses filtros. O formulário **Refinar por tags, menções e datas** ajuda a adicionar tags, menções e intervalos; os filtros aparecem como botões removíveis. No mapa, **Usar busca atual** copia a consulta atual.
 
 ## Mapa e propriedades Markdown
 
@@ -72,7 +82,7 @@ O mapa conecta notas com `[[Nome da nota]]` ou `[[pasta/arquivo]]`. No projeto, 
 
 Arraste um ponto para reposicioná-lo; arraste o fundo para navegar; use a roda do mouse ou os controles para ampliar. Os ajustes de posição, tamanho dos pontos e espessura das linhas ficam salvos localmente por workspace. **Reorganizar pontos** restaura a distribuição inicial. A animação respeita a preferência de movimento reduzido do sistema.
 
-A cor pode ser escolhida ao selecionar um ponto ou declarada no começo do arquivo:
+A cor pode ser escolhida nas **Propriedades da nota/Markdown**, no seletor de um ponto do mapa ou declarada no começo do arquivo:
 
 ```markdown
 ---
@@ -102,7 +112,8 @@ Veja [como criar temas e plugins](docs/extensions.md) e os [pacotes de exemplo](
 | --- | --- |
 | Ctrl K | Abrir busca híbrida |
 | Ctrl N | Nova nota ou novo arquivo Markdown |
-| Ctrl S | Salvar o conteúdo atual |
+| Ctrl S | Salvar os arquivos abertos, incluindo as outras colunas |
+| Ctrl Shift D | Adicionar uma nota lado a lado |
 | Ctrl E | Alternar edição/leitura |
 | Ctrl Shift P | Abrir paleta de comandos |
 | Esc | Fechar diálogo ou sair do modo foco |
@@ -110,7 +121,7 @@ Veja [como criar temas e plugins](docs/extensions.md) e os [pacotes de exemplo](
 
 ## Dados e privacidade
 
-No Windows, a biblioteca fica em `%APPDATA%/amago/vault.json`. **Configurações → Abrir pasta de dados** mostra o diretório exato. As gravações são serializadas e usam arquivo temporário seguido de renomeação. A primeira gravação de cada dia preserva a cópia anterior em `backups/`. O fechamento da janela aguarda o salvamento e permanece aberto se houver erro.
+No Windows, a biblioteca fica em `%APPDATA%/amago/vault.json`. **Configurações → Dados → Abrir pasta de dados** mostra o diretório exato. As gravações são serializadas e usam arquivo temporário seguido de renomeação. A primeira gravação de cada dia preserva a cópia anterior em `backups/`. O fechamento da janela aguarda o salvamento e permanece aberto se houver erro.
 
 Na web, a biblioteca usa o armazenamento local do navegador. Limpar os dados do site remove essa biblioteca. Os projetos usam apenas a pasta explicitamente selecionada; seu conteúdo não é importado para o espaço pessoal.
 
