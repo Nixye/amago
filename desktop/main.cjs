@@ -1,6 +1,7 @@
 const {app,BrowserWindow,protocol,net,ipcMain,shell,Menu,nativeTheme}=require('electron');
 const {supportsAcrylic}=require('./appearance.cjs');
 const {Workspace}=require('./workspace.cjs');
+const {operations}=require('./project-operations.cjs');
 const {RecentProjects}=require('./projects.cjs');
 const {checkRelease,releasesUrl}=require('./updates.cjs');
 const acrylicSupported=supportsAcrylic(process.platform,require('node:os').release());
@@ -21,7 +22,7 @@ ipcMain.handle('updates:info',event=>{if(!trusted(event))throw Error('Invalid or
 ipcMain.handle('updates:check',async(event,token)=>{if(!trusted(event))throw Error('Invalid origin');if(checkingUpdate)return {status:'error',message:'Uma consulta já está em andamento.'};checkingUpdate=true;latestUpdate=null;try{latestUpdate=await checkRelease(app.getVersion(),token);return latestUpdate}finally{checkingUpdate=false}});
 ipcMain.handle('updates:open',async(event,target)=>{if(!trusted(event))throw Error('Invalid origin');const url=target==='releases'?releasesUrl:target==='notes'?latestUpdate?.url:['setup','portable'].includes(target)&&latestUpdate?.status==='available'?latestUpdate.assets?.[target]?.url:null;if(!url)return {error:'Consulte as atualizações antes de abrir esse download.'};try{await shell.openExternal(url);return {opened:true}}catch{return {error:'Não foi possível abrir o navegador.'}}});
 let project=null;const recents=new RecentProjects(path.join(dataDir,'projects.json'));
-const connectProject=async root=>{const candidate=await Workspace.open(root),tree=await candidate.tree(),recent=await recents.remember(candidate.root);project=candidate;return {...tree,recentId:recent.id}};
+const connectProject=async root=>{const candidate=await Workspace.open(root),tree=await candidate.tree(),recent=await recents.remember(candidate.root);candidate.operations=operations(candidate);project=candidate;return {...tree,recentId:recent.id}};
 ipcMain.handle('project:recent',async event=>{if(!trusted(event))throw Error('Invalid origin');try{return {projects:await recents.list()}}catch(e){return {error:e.message}}});
 ipcMain.handle('project:reopen',async(event,id)=>{if(!trusted(event))throw Error('Invalid origin');try{return await connectProject(await recents.pathFor(id))}catch(e){return {error:'Não foi possível abrir este projeto. Verifique se a pasta ainda existe e se está acessível. '+e.message}}});
 ipcMain.handle('project:forget',async(event,id)=>{if(!trusted(event))throw Error('Invalid origin');try{return await recents.forget(id)}catch(e){return {error:e.message}}});
@@ -31,6 +32,8 @@ ipcMain.handle('project:tree',projectCall(p=>p.tree()));
 ipcMain.handle('project:read',projectCall((p,relative)=>p.read(relative)));
 ipcMain.handle('project:image',projectCall((p,relative)=>p.image(relative)));
 ipcMain.handle('project:save',projectCall((p,relative,body,version)=>p.save(relative,body,version)));
+ipcMain.handle('project:preview-operation',projectCall((p,args)=>p.operations.preview(args)));
+ipcMain.handle('project:apply-operation',projectCall((p,id)=>p.operations.apply(id)));
 ipcMain.handle('project:create',projectCall((p,relative,kind)=>p.create(relative,kind)));
 ipcMain.handle('vault:load',async event=>{if(!trusted(event))throw Error('Invalid origin');try{return {data:JSON.parse(await fs.readFile(file,'utf8'))}}catch(e){if(e.code==='ENOENT')return {data:null};return {error:'O arquivo local não pôde ser lido. Seus arquivos foram preservados.'}}});
 ipcMain.handle('vault:save',async(event,data)=>{if(!trusted(event)||typeof data!=='string'||data.length>20000000)throw Error('Invalid vault');const parsed=JSON.parse(data);if(!Array.isArray(parsed.notes)||!Array.isArray(parsed.folders))throw Error('Invalid format');
@@ -39,7 +42,9 @@ const job=chain.catch(()=>{}).then(async()=>{await fs.mkdir(dataDir,{recursive:t
 ipcMain.handle('vault:folder',event=>{if(!trusted(event))throw Error('Invalid origin');return shell.openPath(dataDir)});
 Menu.setApplicationMenu(null);
 nativeTheme.themeSource='dark';
-win=new BrowserWindow({icon:path.join(__dirname,'icon.ico'),width:1440,height:940,minWidth:740,minHeight:560,frame:false,transparent:acrylicSupported,backgroundMaterial:acrylicSupported?'acrylic':'none',backgroundColor:acrylicSupported?'#00000000':'#090e19',title:'Âmago',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,sandbox:true,nodeIntegration:false}});
+win=new BrowserWindow({icon:path.join(__dirname,'icon.ico'),width:1440,height:940,minWidth:740,minHeight:560,frame:false,transparent:false,backgroundMaterial:acrylicSupported?'acrylic':'none',backgroundColor:acrylicSupported?'#00000000':'#090e19',title:'Âmago',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,sandbox:true,nodeIntegration:false}});
+// Use the native DWM acrylic material without a layered transparent window,
+// so Windows retains caption double-click, resizing and snap behavior.
 ipcMain.handle('appearance:set',(event,value)=>{if(!trusted(event)||typeof value?.enabled!=='boolean'||!['light','dark'].includes(value.theme))throw Error('Invalid appearance');nativeTheme.themeSource=value.theme;const enabled=acrylicSupported&&value.enabled;try{if(acrylicSupported)win.setBackgroundMaterial(enabled?'acrylic':'none');win.setBackgroundColor(enabled?'#00000000':value.theme==='light'?'#f0f5fb':'#090e19');return {supported:acrylicSupported,enabled}}catch{win.setBackgroundColor(value.theme==='light'?'#f0f5fb':'#090e19');return {supported:false,enabled:false}}});
 ipcMain.handle('window:control',(event,command)=>{if(!trusted(event)||!['minimize','maximize','close'].includes(command))throw Error('Invalid window command');if(command==='minimize')win.minimize();if(command==='maximize'){win.isMaximized()?win.unmaximize():win.maximize()}if(command==='close')win.close()});
 win.webContents.session.setPermissionRequestHandler((_wc,_p,callback)=>callback(false));

@@ -5,3 +5,7 @@ window.amagoStartup=(()=>{
  try{document.documentElement.toggleAttribute('data-splash-disabled',localStorage.getItem(key)==='false')}catch{}
  return {setEnabled};
 })();
+
+// Keep a filesystem operation's confirmation visible until its result is available.
+window.addEventListener('keydown',e=>{if(window.amagoOperationBusy&&(e.ctrlKey||e.metaKey||e.key==='Escape')){e.preventDefault();e.stopImmediatePropagation()}},true);
+window.addEventListener('click',e=>{if(window.amagoOperationBusy&&(e.target.closest('[data-action="close"]')||e.target.classList.contains('modal-backdrop'))){e.preventDefault();e.stopImmediatePropagation()}},true);

@@ -28,4 +28,5 @@ function withProperties(body,values){const meta=metadata(body),newline=body.incl
 }
 function withColor(body,color){if(!/^#[\da-f]{6}$/i.test(color))throw Error('Cor inválida.');return withProperties(body,{color})}
 root.AmagoSearch={normalize,metadata,tokens,documentData,matches,withColor,withProperties};
+if(typeof module!=='undefined')module.exports=root.AmagoSearch;
 })(globalThis);

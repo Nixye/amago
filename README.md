@@ -7,11 +7,11 @@
 
 O Âmago reúne um editor Markdown, uma biblioteca pessoal e projetos baseados em pastas reais. Você pode escrever, encontrar referências e explorar conexões sem depender de sincronização em nuvem. O aplicativo é independente e não possui vínculo com o Obsidian.
 
-- **Navegação organizada:** abas Explorar e Coleções, busca em modal, árvore de arquivos e seletor de workspace.
+- **Navegação organizada:** abas Explorar e Coleções, busca em modal, rolagem preservada, menus de contexto e seletor de workspace.
 - **Projetos locais:** subpastas, edição de Markdown, JSON, CSV, TXT e outros textos, criação de notas e visualização de imagens.
 - **Busca híbrida:** combine nome, conteúdo, tags, menções e datas; remova filtros individualmente.
-- **Mapa interativo:** filtros compartilhados com a busca, vínculos animados, pontos arrastáveis, zoom, cores e ajustes de traçado.
-- **Escrita:** até quatro notas editáveis lado a lado, prévia Markdown, wikilinks, tarefas, notas diárias, favoritos, modelos e modo foco.
+- **Mapa interativo:** busca híbrida, vínculos animados, pontos arrastáveis, zoom, cores, vizinhança e organizações orgânica, circular ou por pasta.
+- **Escrita:** até quatro notas editáveis lado a lado, prévia Markdown, sugestões de páginas/tags/menções, wikilinks, tarefas, notas diárias, favoritos, modelos e modo foco.
 - **Personalização:** seis temas nativos, tema inspirado em Cyberpunk, paletas da comunidade e plugins com permissões explícitas.
 - **Windows:** instalador e versão portátil x64, ícone próprio e acrílico nativo com densidade ajustável.
 
@@ -60,11 +60,21 @@ Em **Configurações → Geral**, desative **Mostrar splash animada ao iniciar**
 | Armazenamento | Biblioteca local do app/navegador | Arquivos originais da pasta selecionada |
 | Salvamento | Automático | Ctrl S; também antes de trocar de arquivo/workspace e ao fechar o desktop |
 | Organização | Pastas lógicas, tags e favoritos | Estrutura real de diretórios |
-| Histórico e lixeira | Histórico de notas e lixeira recuperável | Não disponíveis para os arquivos do projeto |
+| Histórico e recuperação | Histórico de notas e lixeira recuperável | Cópias anteriores de renomeações e remoções em `.amago/operations` |
 | Busca e mapa | Notas da biblioteca | Textos indexados; mapa das notas Markdown |
-| Backup automático | Cópia diária anterior no desktop | Não; mantenha seu próprio backup ou versionamento |
+| Backup automático | Cópia diária anterior no desktop | Cópia antes de renomear/remover; mantenha também seu backup ou versionamento |
 
 Se um arquivo mudar no disco desde a leitura, o Âmago bloqueia a gravação, mantém o rascunho e oferece **Exportar rascunho** e **Recarregar do disco**. O aplicativo não mescla alterações automaticamente. Use **Atualizar arquivos** para reler a árvore e reconstruir o índice após mudanças externas.
+
+### Renomear, remover e criar em uma pasta
+
+No explorador, clique com o **botão direito** em um arquivo ou pasta, use o botão **⋯** da linha ou pressione **Shift F10** com a linha focada. Pastas também oferecem **Nova nota nesta pasta**.
+
+**Renomear** abre uma prévia dos documentos e da quantidade de vínculos que serão adaptados. A confirmação atualiza wikilinks, links Markdown locais e menções que resolvem para documentos; preserva os rótulos e fragmentos e recalcula caminhos relativos quando uma pasta muda. Aliases continuam funcionando. Código, comentários, links externos e referências sem destino conhecido não são alterados. No projeto, mantenha a extensão do arquivo.
+
+**Remover** mostra os arquivos afetados e as notas que os referenciam. No espaço pessoal, as notas vão para a lixeira. Em projetos, o conteúdo anterior fica em `.amago/operations/<identificador>/original`, mantendo os caminhos relativos; `manifest.json` registra a operação. Para recuperar, feche os arquivos afetados no editor e copie o conteúdo de `original` de volta aos respectivos caminhos do projeto. Confira os arquivos atuais antes de substituí-los. Essas cópias não são removidas automaticamente.
+
+O Âmago verifica novamente os arquivos após a prévia. Mudanças externas interrompem a operação e exigem nova revisão. Uma falha pode deixar a cópia no novo nome para conferência; a mensagem informa o local de recuperação. Não há uma transação atômica entre vários arquivos, especialmente no navegador. As operações verificadas aceitam até 3.000 itens, 12 níveis e 100 MB de conteúdo lido; arquivos Markdown devem ser UTF-8 e ter até 5 MB. Pastas com diretórios protegidos ou links simbólicos não são removidas ou renomeadas pelo app.
 
 ## Abrir pastas do Obsidian e arquivos de texto
 
@@ -93,6 +103,14 @@ O botão **Conexões** oculta ou reexibe as referências da nota ativa. Ele sepa
 
 **Configurações** reúne as abas **Geral**, **Aparência**, **Dados**, **Plugins** e **Atualizações** em uma janela adaptada à altura da tela, com conteúdo rolável. As preferências são salvas ao alterar os controles; formulários com botão de salvar mantêm a ação no rodapé do diálogo. **Buscar**, ou **Ctrl K**, abre um diálogo com resultados navegáveis pelas setas e Enter.
 
+### Sugestões ao escrever
+
+Digite `[[` para sugerir páginas, `#` para tags ou `@` para menções e páginas do workspace atual. **Ctrl Espaço** abre as sugestões manualmente; continue digitando para filtrar. Use **↑/↓** para navegar, **Enter/Tab** para inserir e **Esc** para fechar. As páginas incluem o caminho para distinguir nomes iguais. Uma menção a uma página é inserida como `@[[caminho|nome]]`; menções simples usam `@nome`.
+
+As sugestões funcionam em Markdown, inclusive nas colunas de edição, e não aparecem dentro de código ou comentários. A lista mostra até 20 correspondências por vez.
+
+No Windows, dê duplo clique na barra superior para maximizar ou restaurar a janela.
+
 ## Busca híbrida
 
 Todos os critérios são combinados com **E**: um resultado precisa satisfazer cada filtro. A busca ignora diferenças de maiúsculas e acentos. Use aspas para valores com espaços e `-` para excluir um critério.
@@ -115,9 +133,9 @@ O mapa conecta notas por wikilinks, aliases, links Markdown locais e menções q
 
 Também reconhece links com espaços (`[Nota](<pasta/Minha nota.md>)`), caminhos codificados (`Minha%20nota.md`), parênteses e referências Markdown `[Nome][id]` com sua definição. Links `file://` só são resolvidos quando apontam para dentro da pasta aberta. Um fragmento `#Título` abre a nota e procura o título na prévia; referências a blocos não possuem navegação específica. Imagens incorporadas com `![[imagem.png]]` e `![Descrição](../imagens/foto.png)` aparecem na prévia do projeto.
 
-O mapa reúne notas Markdown; o painel **Conexões** também mostra outros arquivos. Os filtros mostram apenas pontos correspondentes e os vínculos entre eles.
+O mapa reúne notas Markdown; o painel **Conexões** também mostra outros arquivos. Os filtros mostram apenas pontos correspondentes e os vínculos entre eles. A lateral contém uma prévia de até oito vizinhos clicáveis; **Mapa desta nota** abre a vizinhança no mapa completo.
 
-Arraste um ponto para reposicioná-lo; arraste o fundo para navegar; use a roda do mouse ou os controles para ampliar. Os ajustes de posição, tamanho dos pontos e espessura das linhas ficam salvos localmente por workspace. **Reorganizar pontos** restaura a distribuição inicial. A animação respeita a preferência de movimento reduzido do sistema.
+Arraste um ponto para reposicioná-lo; arraste o fundo para navegar; use a roda do mouse ou os controles para ampliar. Os ajustes de posição, tamanho dos pontos e espessura das linhas ficam salvos localmente por workspace. Escolha **Organização → Orgânica, Circular ou Por pasta** para mudar a distribuição. **Nomes** alterna os rótulos. Selecione um ponto e use **Focar nota selecionada**, com uma vizinhança de um, dois ou três níveis; **Mostrar todo o mapa** remove esse foco. A busca e o filtro de vínculos continuam combinados com essa seleção. **Reorganizar pontos** restaura a distribuição escolhida. A animação respeita a preferência de movimento reduzido do sistema.
 
 A cor pode ser escolhida nas **Propriedades da nota/Markdown**, no seletor de um ponto do mapa ou declarada no começo do arquivo:
 
