@@ -163,6 +163,22 @@ Veja [como criar temas e plugins](docs/extensions.md) e os [pacotes de exemplo](
 
 ## Atalhos
 
+### Edição visual e visões do mapa
+
+Nos modos **Ler** e **Editor e prévia**, clique no texto da prévia para editar diretamente. A barra de edição visual oferece negrito, itálico e desfazer. As alterações continuam sendo armazenadas em Markdown; propriedades iniciais e trechos não editados são preservados. Arquivos de projeto continuam usando **Ctrl S** para gravar no disco. A edição visual cobre o subconjunto Markdown do aplicativo e não equivale à compatibilidade completa com documentos Word.
+
+O mapa oferece organização orgânica, circular, por pasta, fluxograma por níveis e cartões em colunas. O seletor **Relações** alterna entre referências entre documentos, tags compartilhadas e menções compartilhadas. Tags e menções em comum representam afinidade, não uma direção causal. O fluxograma acomoda ciclos sem exigir que o projeto seja uma árvore. Arraste os elementos para ajustar a disposição.
+
+**Animar conexões** controla os sinais que percorrem os vínculos e os pulsos dos elementos. O aplicativo respeita a preferência de movimento reduzido do sistema. Para limitar o custo de renderização, até 100 vínculos recebem sinais móveis simultaneamente.
+
+### Repositórios Git no Windows
+
+O botão **Git**, no topo, permite clonar uma URL HTTPS para uma nova pasta, consultar alterações e branches, buscar atualizações, criar commits, mesclar branches e enviar commits. Requer Git instalado no PATH, identidade de autor e autenticação configuradas no Git do Windows. Não informe senhas ou tokens na URL.
+
+O commit inclui todas as alterações não ignoradas do projeto, com confirmação. Abra a raiz do repositório como projeto. Para mesclar, salve os documentos e faça commit das alterações locais primeiro. Se ocorrer conflito, abra os arquivos, edite os marcadores no modo Markdown, salve e use **Marcar conflitos editados como resolvidos** antes de criar o commit da resolução. Casos complexos, como conflitos de exclusão, podem exigir uma ferramenta Git externa. O app não força envios, não configura remotos e não executa hooks de repositório nessas operações. O envio usa o remoto/upstream já configurado; configure-o externamente caso ainda não exista.
+
+Referências: [clonagem](https://git-scm.com/docs/git-clone) e [mesclagem e conflitos](https://git-scm.com/docs/git-merge).
+
 | Atalho | Ação |
 | --- | --- |
 | Ctrl K | Abrir busca híbrida |

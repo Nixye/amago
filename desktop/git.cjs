@@ -1,0 +1,16 @@
+const {execFile}=require('node:child_process');
+const path=require('node:path');
+const fs=require('node:fs/promises');
+function run(cwd,args){return new Promise((resolve,reject)=>execFile('git',['-c','core.hooksPath='+path.join(__dirname,'disabled-hooks'),'-c','protocol.file.allow=never',...args],{cwd,windowsHide:true,timeout:120000,maxBuffer:4*1024*1024,env:{...process.env,GIT_TERMINAL_PROMPT:'0',GIT_EDITOR:'true',GIT_MERGE_AUTOEDIT:'no'}},(error,stdout,stderr)=>error?reject(Error((stderr||error.message).replace(/https:\/\/[^/@\s]+@/g,'https://[redacted]@'))):resolve(stdout)))}
+async function repository(root){const top=(await run(root,['rev-parse','--show-toplevel'])).trim();if(path.resolve(top).toLowerCase()!==path.resolve(root).toLowerCase())throw Error('Abra a raiz do repositório como projeto.');}
+async function status(root){await repository(root);const raw=await run(root,['status','--porcelain=v1','-z']);return {branch:(await run(root,['branch','--show-current'])).trim(),changes:raw.split('\0').filter(Boolean),branches:(await run(root,['for-each-ref','--format=%(refname:short)','refs/heads','refs/remotes'])).trim().split('\n').filter(Boolean)}}
+async function operate(root,operation,value){await repository(root);if(operation==='status')return status(root);
+ if(operation==='fetch')await run(root,['fetch','--prune']);
+ else if(operation==='push')await run(root,['push']);
+ else if(operation==='resolve'){const files=(await run(root,['diff','--name-only','--diff-filter=U','-z'])).split('\0').filter(Boolean);for(const file of files){const full=path.resolve(root,file);if(!full.startsWith(path.resolve(root)+path.sep))throw Error('Caminho inválido.');const text=await fs.readFile(full,'utf8');if(/^(<<<<<<< |=======|>>>>>>> )/m.test(text))throw Error('Remova os marcadores de conflito de '+file+' antes de marcar como resolvido.')}for(const file of files)await run(root,['add','--',file]);}
+ else if(operation==='commit'){if(typeof value!=='string'||!value.trim()||value.length>2000)throw Error('Informe uma mensagem de commit.');if((await run(root,['diff','--name-only','--diff-filter=U'])).trim())throw Error('Resolva os conflitos antes de criar o commit.');await run(root,['add','-A','--','.']);await run(root,['commit','-m',value]);}
+ else if(operation==='merge'){if((await run(root,['status','--porcelain'])).trim())throw Error('Salve e faça commit das alterações antes de mesclar.');const refs=(await status(root)).branches;if(!refs.includes(value))throw Error('Selecione uma branch existente.');await run(root,['merge','--no-edit','--',value]);}
+ else throw Error('Operação Git não suportada.');return status(root);
+}
+async function clone(url,parent,name){const parsed=new URL(url);if(parsed.protocol!=='https:'||parsed.username||parsed.password||!parsed.hostname)throw Error('Use uma URL HTTPS sem credenciais.');if(!/^[\p{L}\p{N}_-][\p{L}\p{N}_.-]{0,79}$/u.test(name)||name==='.'||name==='..')throw Error('Nome de pasta inválido.');const destination=path.join(parent,name);try{await fs.lstat(destination);throw Error('A pasta de destino já existe.')}catch(e){if(e.code!=='ENOENT')throw e}await run(parent,['clone','--',url,destination]);return destination;}
+module.exports={run,status,operate,clone};

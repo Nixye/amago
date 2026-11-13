@@ -34,6 +34,8 @@ ipcMain.handle('project:image',projectCall((p,relative)=>p.image(relative)));
 ipcMain.handle('project:save',projectCall((p,relative,body,version)=>p.save(relative,body,version)));
 ipcMain.handle('project:preview-operation',projectCall((p,args)=>p.operations.preview(args)));
 ipcMain.handle('project:apply-operation',projectCall((p,id)=>p.operations.apply(id)));
+let gitBusy=false;
+ipcMain.handle('git:run',async(event,operation,value)=>{if(!trusted(event))throw Error('Invalid origin');if(gitBusy)return {error:'Uma operação Git está em andamento.'};gitBusy=true;try{const git=require('./git.cjs');if(operation==='clone'){const selected=await require('electron').dialog.showOpenDialog(win,{title:'Escolha a pasta que receberá o repositório',properties:['openDirectory']});if(selected.canceled)return {canceled:true};return {project:await connectProject(await git.clone(value.url,selected.filePaths[0],value.name))}}if(!project)throw Error('Abra um projeto Git primeiro.');return await git.operate(project.root,operation,value)}catch(e){return {error:e.message}}finally{gitBusy=false}});
 ipcMain.handle('project:create',projectCall((p,relative,kind)=>p.create(relative,kind)));
 ipcMain.handle('vault:load',async event=>{if(!trusted(event))throw Error('Invalid origin');try{return {data:JSON.parse(await fs.readFile(file,'utf8'))}}catch(e){if(e.code==='ENOENT')return {data:null};return {error:'O arquivo local não pôde ser lido. Seus arquivos foram preservados.'}}});
 ipcMain.handle('vault:save',async(event,data)=>{if(!trusted(event)||typeof data!=='string'||data.length>20000000)throw Error('Invalid vault');const parsed=JSON.parse(data);if(!Array.isArray(parsed.notes)||!Array.isArray(parsed.folders))throw Error('Invalid format');
