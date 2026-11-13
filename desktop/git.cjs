@@ -2,7 +2,7 @@ const {execFile}=require('node:child_process');
 const path=require('node:path');
 const fs=require('node:fs/promises');
 function run(cwd,args){return new Promise((resolve,reject)=>execFile('git',['-c','core.hooksPath='+path.join(__dirname,'disabled-hooks'),'-c','protocol.file.allow=never',...args],{cwd,windowsHide:true,timeout:120000,maxBuffer:4*1024*1024,env:{...process.env,GIT_TERMINAL_PROMPT:'0',GIT_EDITOR:'true',GIT_MERGE_AUTOEDIT:'no'}},(error,stdout,stderr)=>error?reject(Error((stderr||error.message).replace(/https:\/\/[^/@\s]+@/g,'https://[redacted]@'))):resolve(stdout)))}
-async function repository(root){const top=(await run(root,['rev-parse','--show-toplevel'])).trim();if(path.resolve(top).toLowerCase()!==path.resolve(root).toLowerCase())throw Error('Abra a raiz do repositório como projeto.');}
+async function repository(root){const top=(await run(root,['rev-parse','--show-toplevel'])).trim();if((await fs.realpath(top)).toLowerCase()!==(await fs.realpath(root)).toLowerCase())throw Error('Abra a raiz do repositório como projeto.');}
 async function status(root){await repository(root);const raw=await run(root,['status','--porcelain=v1','-z']);return {branch:(await run(root,['branch','--show-current'])).trim(),changes:raw.split('\0').filter(Boolean),branches:(await run(root,['for-each-ref','--format=%(refname:short)','refs/heads','refs/remotes'])).trim().split('\n').filter(Boolean)}}
 async function operate(root,operation,value){await repository(root);if(operation==='status')return status(root);
  if(operation==='fetch')await run(root,['fetch','--prune']);
