@@ -232,6 +232,8 @@ A interface usa JavaScript, HTML, CSS e SVG, sem framework de frontend. O Electr
 
 O GitHub Actions valida a versão, testa, compila os dois executáveis e publica uma release com SHA-256. A execução manual do workflow gera artefatos sem criar release. Apenas o job de publicação recebe `contents: write`; não é necessário um token pessoal no workflow.
 
+O modo `npm run dist:win:signed` prepara executáveis com assinatura Authenticode obrigatória e verificação do editor, certificado e carimbo de tempo. Ele requer um certificado de Code Signing emitido e configurado no Windows. A contratação e a integração da assinatura no CI ainda estão pendentes; veja [assinatura de executáveis Windows](docs/windows-signing.md).
+
 ## Relatar problemas
 
 Ao abrir uma issue, inclua a versão do Âmago, a versão do Windows ou navegador, os passos para reproduzir e se o problema ocorre no espaço pessoal ou em um projeto. Use um arquivo de exemplo sem conteúdo privado quando necessário. Problemas em extensões devem incluir o nome e a versão do pacote.

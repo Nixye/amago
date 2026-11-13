@@ -10,6 +10,8 @@
     "web": "node serve.mjs",
     "test": "node verify.mjs && node tests/refinement.mjs && node tests/workspace.mjs && node tests/discovery.mjs && node tests/studio.mjs && node tests/compatibility.mjs && node tests/navigation.mjs && node tests/updates.mjs && node tests/interaction.mjs && node tests/browser-operations.mjs",
     "dist:win": "electron-builder --win nsis portable --x64 --publish never",
+    "dist:win:signed": "node scripts/build-signed-windows.mjs",
+    "test:signing": "node tests/signing.mjs",
     "version": "node scripts/version.mjs",
     "pretest": "node scripts/version.mjs",
     "predist:win": "node scripts/version.mjs"
